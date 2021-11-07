@@ -17,8 +17,25 @@ import {
   forceCenter,
   drag,
 } from "d3"
+import useNode from "./factory/useNode"
 
-import { nodes, links, MANY_BODY_STRENGTH } from "./factory/controler"
+const {
+  colors,
+  nodes,
+  links,
+  MAIN_NODE_SIZE,
+  CHILD_NODE_SIZE,
+  LEAF_NODE_SIZE,
+  DEFAULT_DISTANCE,
+  MAIN_NODE_DISTANCE,
+  LEAF_NODE_DISTANCE,
+  MANY_BODY_STRENGTH,
+  addMainNode,
+  addChildNode,
+  assembleChildNode,
+  connectMainNodes,
+  addFirstLayerNode,
+} = useNode()
 
 onMounted(() => {
   const svg = select("#container")
@@ -27,11 +44,11 @@ onMounted(() => {
   const centerX = width / 2
   const centerY = height / 2
 
-  const simulation = forceSimulation(nodes)
+  const simulation = forceSimulation(nodes.value)
     .force("charge", forceManyBody().strength(MANY_BODY_STRENGTH))
     .force(
       "link",
-      forceLink(links).distance((link) => link.distance)
+      forceLink(links.value).distance((link) => link.distance)
     )
     .force("center", forceCenter(centerX, centerY))
 
@@ -44,14 +61,14 @@ onMounted(() => {
 
   const lines = svg
     .selectAll("line")
-    .data(links)
+    .data(links.value)
     .enter()
     .append("line")
     .attr("stroke", (link) => link.color || "black")
 
   const circles = svg
     .selectAll("circle")
-    .data(nodes)
+    .data(nodes.value)
     .enter()
     .append("circle")
     .attr("fill", (node) => node.color || "gray")
@@ -60,7 +77,7 @@ onMounted(() => {
 
   const text = svg
     .selectAll("text")
-    .data(nodes)
+    .data(nodes.value)
     .enter()
     .append("text")
     .attr("text-anchor", "middle")
