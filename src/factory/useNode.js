@@ -75,35 +75,35 @@ export default function () {
   // assembleChildNode(artsWeb, "Community Vision")
   // assembleChildNode(artsWeb, "Silicon Valley Creates")
 
-  const socialImpactCommons = { id: "Social Impact Commons" }
-  addMainNode(socialImpactCommons)
-  assembleChildNode(socialImpactCommons, "Theatre Bay Area")
-  assembleChildNode(socialImpactCommons, "EastSide Arts Alliance")
-  assembleChildNode(socialImpactCommons, "Local Color")
+  // const socialImpactCommons = { id: "Social Impact Commons" }
+  // addMainNode(socialImpactCommons)
+  // assembleChildNode(socialImpactCommons, "Theatre Bay Area")
+  // assembleChildNode(socialImpactCommons, "EastSide Arts Alliance")
+  // assembleChildNode(socialImpactCommons, "Local Color")
 
-  const cast = { id: "Community Arts Stabilization Trust" }
-  addMainNode(cast)
-  assembleChildNode(cast, "CounterPulse")
-  assembleChildNode(cast, "Luggage Store Gallery")
-  assembleChildNode(cast, "Performing Arts Workshop")
-  assembleChildNode(cast, "447 Minna St.", 5)
-  assembleChildNode(cast, "Keeping Space Oakland")
+  // const cast = { id: "Community Arts Stabilization Trust" }
+  // addMainNode(cast)
+  // assembleChildNode(cast, "CounterPulse")
+  // assembleChildNode(cast, "Luggage Store Gallery")
+  // assembleChildNode(cast, "Performing Arts Workshop")
+  // assembleChildNode(cast, "447 Minna St.", 5)
+  // assembleChildNode(cast, "Keeping Space Oakland")
 
-  const ambitioUS = { id: "AmbitioUS" }
-  addMainNode(ambitioUS)
-  assembleChildNode(ambitioUS, "EBPREC")
-  assembleChildNode(ambitioUS, "SELC", 3)
-  assembleChildNode(ambitioUS, "The Runway Project", 3)
-  assembleChildNode(ambitioUS, "Common Future", 3)
-  assembleChildNode(ambitioUS, "Freelancers Union", 3)
-  assembleChildNode(ambitioUS, "US Federation of Worker Cooperatives", 3)
+  // const ambitioUS = { id: "AmbitioUS" }
+  // addMainNode(ambitioUS)
+  // assembleChildNode(ambitioUS, "EBPREC")
+  // assembleChildNode(ambitioUS, "SELC", 3)
+  // assembleChildNode(ambitioUS, "The Runway Project", 3)
+  // assembleChildNode(ambitioUS, "Common Future", 3)
+  // assembleChildNode(ambitioUS, "Freelancers Union", 3)
+  // assembleChildNode(ambitioUS, "US Federation of Worker Cooperatives", 3)
 
-  connectMainNodes(artsWeb, socialImpactCommons)
-  connectMainNodes(artsWeb, cast)
-  connectMainNodes(socialImpactCommons, cast)
-  connectMainNodes(ambitioUS, cast)
-  connectMainNodes(ambitioUS, socialImpactCommons)
-  connectMainNodes(ambitioUS, artsWeb)
+  // connectMainNodes(artsWeb, socialImpactCommons)
+  // connectMainNodes(artsWeb, cast)
+  // connectMainNodes(socialImpactCommons, cast)
+  // connectMainNodes(ambitioUS, cast)
+  // connectMainNodes(ambitioUS, socialImpactCommons)
+  // connectMainNodes(ambitioUS, artsWeb)
 
   return {
     colors,

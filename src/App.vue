@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { onMounted } from "@vue/runtime-core"
+import { computed, onMounted, ref, watch } from "@vue/runtime-core"
 import {
   select,
   forceSimulation,
@@ -37,45 +37,55 @@ const {
   addFirstLayerNode,
 } = useNode()
 
-onMounted(() => {
-  const svg = select("#container")
-  const width = +svg.attr("width")
-  const height = +svg.attr("height")
-  const centerX = width / 2
-  const centerY = height / 2
+const svg = ref(null)
+const simulation = ref(null)
+const width = ref(0)
+const height = ref(0)
+const centerX = computed(() => (width.value ? width.value / 2 : 0))
+const centerY = computed(() => (height.value ? height.value / 2 : 0))
+const dragInteraction = ref(null)
+const lines = ref(null)
+const circles = ref(null)
+const text = ref(null)
+const count = ref(0)
 
-  const simulation = forceSimulation(nodes.value)
+onMounted(() => {
+  svg.value = select("#container")
+  width.value = +svg.value.attr("width")
+  height.value = +svg.value.attr("height")
+
+  simulation.value = forceSimulation(nodes.value)
     .force("charge", forceManyBody().strength(MANY_BODY_STRENGTH))
     .force(
       "link",
       forceLink(links.value).distance((link) => link.distance)
     )
-    .force("center", forceCenter(centerX, centerY))
+    .force("center", forceCenter(centerX.value, centerY.value))
 
-  const dragInteraction = drag().on("drag", (event, node) => {
+  dragInteraction.value = drag().on("drag", (event, node) => {
     node.fx = event.x
     node.fy = event.y
-    simulation.alpha(1)
-    simulation.restart()
+    simulation.value.alpha(1)
+    simulation.value.restart()
   })
 
-  const lines = svg
+  const lines = svg.value
     .selectAll("line")
     .data(links.value)
     .enter()
     .append("line")
     .attr("stroke", (link) => link.color || "black")
 
-  const circles = svg
+  const circles = svg.value
     .selectAll("circle")
     .data(nodes.value)
     .enter()
     .append("circle")
     .attr("fill", (node) => node.color || "gray")
     .attr("r", (node) => node.size)
-    .call(dragInteraction)
+    .call(dragInteraction.value)
 
-  const text = svg
+  const text = svg.value
     .selectAll("text")
     .data(nodes.value)
     .enter()
@@ -85,11 +95,12 @@ onMounted(() => {
     .style("pointer-events", "none")
     .text((node) => node.id)
 
-  simulation.on("tick", () => {
-    circles.attr("cx", (node) => node.x).attr("cy", (node) => node.y)
-    text.attr("x", (node) => node.x).attr("y", (node) => node.y)
+  simulation.value.on("tick", () => {
+    if (!simulation.value | !svg.value) return
+    circles.value.attr("cx", (node) => node.x).attr("cy", (node) => node.y)
+    text.value.attr("x", (node) => node.x).attr("y", (node) => node.y)
 
-    lines
+    lines.value
       .attr("x1", (link) => link.source.x)
       .attr("y1", (link) => link.source.y)
       .attr("x2", (link) => link.target.x)
@@ -97,14 +108,3 @@ onMounted(() => {
   })
 })
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
