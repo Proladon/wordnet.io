@@ -59,14 +59,17 @@
               } node element`"
               :r="nodeSize"
             ></circle>
+
+            <!-- 節點按鈕 -->
             <rect
+              v-show="pinned.includes(node.index)"
               @click="$emit('deleteNode', node)"
               class="rect"
               rx="15"
               ry="15"
               width="10"
               height="10"
-              style="fill: red; stroke: black; stroke-width: 1; opacity: 0.5"
+              style="fill: red; stroke: black; stroke-width: 1"
             />
             <!-- 下方text v-show="node.showText" -->
             <text
@@ -320,13 +323,19 @@ export default {
       this.$emit('clickLink', e, e.target.__data__)
     },
     clickNode(e) {
+      let focus = false
       if (this.pinned.length === 0) {
+        // 如果都還沒有被點選的
         this.pinnedState(e)
+        focus = true
       } else {
+        // 如果已經有被點選的
         d3.selectAll('.element').style('opacity', 0.2)
         this.pinned = []
+        focus = false
       }
       this.$emit('clickNode', e, e.target.__data__)
+      if (!focus) this.$emit('deFocus')
     },
     clickEle(e) {
       if (e.target.tagName === 'circle') {
@@ -480,6 +489,8 @@ svg {
 }
 .selected {
   opacity: 1 !important;
+  stroke: red;
+  stroke-width: 1px;
 }
 .node,
 .link {

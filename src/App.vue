@@ -1,12 +1,20 @@
 <template>
   <div id="app">
     <div class="my-5 flex justify-center gap-2">
-      <span class="layer-btn" v-for="layer in curLayer" :key="layer"
+      <span
+        class="layer-btn"
+        :class="{ avtivated: activatedLayer === layer }"
+        v-for="layer in curLayer"
+        :key="layer"
+        @click="selectLayer(layer)"
         >Layer {{ layer }}</span
       >
-      <span @click="curLayer += 1">addLayer {{ curLayer + 1 }}</span>
+      <span @click="addLayer">addLayer {{ curLayer + 1 }}</span>
     </div>
-    <div class="flex gap-2 justify-center">
+    <div
+      class="flex gap-2 justify-center"
+      v-if="selectedNode || curLayer === 1"
+    >
       <input
         class="primary-input"
         type="text"
@@ -21,6 +29,8 @@
       showLinkText
       @clear=";(nodes = []), (links = [])"
       @deleteNode="deleteNode"
+      @clickNode="clickNode"
+      @deFocus="selectedNode = null"
     />
   </div>
 </template>
@@ -37,16 +47,13 @@ export default {
   data: () => ({
     inputVal: '',
     curLayer: 0,
+    activatedLayer: null,
+    selectedNode: null,
     nodes: [
       // { id: 'Myriel', group: 1 },
-      // { id: 'Napoleon', group: 1 },
-      // { id: 'Labarre', group: 2 },
-      // { id: 'Valjean', group: 2 },
-      // { id: 'Myrielas', group: 3 },
     ],
     links: [
       // { source: 'Napoleon', target: 'Myriel', value: 1 },
-      // { source: 'Valjean', target: 'Labarre', value: 1 },
       // { source: 'Napoleon', target: 'Valjean', value: 2 },
     ],
   }),
@@ -55,13 +62,32 @@ export default {
       if (!this.inputVal.trim() || !this.curLayer) return
       this.nodes.push({
         id: this.inputVal,
-        group: this.curLayer,
+        group: this.activatedLayer,
       })
+      if (this.curLayer > 1) {
+        this.links.push({
+          source: this.inputVal,
+          target: this.selectedNode.id,
+        })
+      }
       this.inputVal = ''
     },
 
     deleteNode(node) {
       this.nodes.splice(node.index, 1)
+    },
+
+    clickNode(e, node) {
+      this.selectedNode = node
+    },
+
+    addLayer() {
+      this.curLayer += 1
+      this.activatedLayer = this.curLayer
+    },
+
+    selectLayer(layer) {
+      this.activatedLayer = layer
     },
   },
 }
@@ -78,14 +104,18 @@ export default {
 }
 
 .layer-btn {
-  @apply bg-orange-400 px-2;
+  @apply bg-gray-300 px-2 cursor-pointer;
 }
 
 .primary-input {
-  @apply border-1 border-teal-400 rounded-md;
+  @apply border-1 border-teal-400 rounded-md px-5;
 }
 
 .primary-btn {
   @apply bg-teal-400 px-5;
+}
+
+.avtivated {
+  @apply bg-teal-400;
 }
 </style>
