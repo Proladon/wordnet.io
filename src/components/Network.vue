@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import * as d3 from 'd3'
+import * as d3 from "d3"
 // import * as d3Force from 'd3-force'
 // import * as d3Zoom from 'd3-zoom'
 // import * as d3Scale from 'd3-scale'
@@ -107,7 +107,7 @@ import * as d3 from 'd3'
 DOMTokenList.prototype.indexOf = Array.prototype.indexOf
 
 export default {
-  name: 'network',
+  name: "network",
   props: {
     nodeList: Array,
     linkList: Array,
@@ -118,11 +118,11 @@ export default {
     },
     nodeTextKey: {
       type: String,
-      default: 'id',
+      default: "id",
     },
     nodeTypeKey: {
       type: String,
-      default: 'group',
+      default: "group",
     },
     nodeTextFontSize: {
       type: Number,
@@ -139,11 +139,11 @@ export default {
     },
     linkTextKey: {
       type: String,
-      default: 'value',
+      default: "value",
     },
     linkTypeKey: {
       type: String,
-      default: 'type',
+      default: "type",
     },
     linkTextFrontSize: {
       type: Number,
@@ -165,7 +165,7 @@ export default {
     },
     svgTheme: {
       type: String,
-      default: 'light', // dark or light
+      default: "light", // dark or light
     },
     bodyStrength: {
       type: Number,
@@ -194,7 +194,7 @@ export default {
         top: 0,
         left: 0,
       },
-      linkTextContent: '',
+      linkTextContent: "",
     }
   },
   computed: {
@@ -216,44 +216,50 @@ export default {
       return this.linkList
     },
     theme() {
-      if (this.svgTheme === 'light') {
+      if (this.svgTheme === "light") {
         return {
-          bgcolor: 'white',
-          nodeStroke: 'white',
-          linkStroke: 'lightgray',
-          textFill: 'black',
+          bgcolor: "white",
+          nodeStroke: "white",
+          linkStroke: "lightgray",
+          textFill: "black",
         }
       } else {
         // dark
         return {
-          bgcolor: 'black',
-          nodeStroke: 'white',
-          linkStroke: 'rgba(200,200,200)',
-          textFill: 'white',
+          bgcolor: "black",
+          nodeStroke: "white",
+          linkStroke: "rgba(200,200,200)",
+          textFill: "white",
         }
       }
     },
   },
   watch: {
     bodyStrength: function () {
+      this.force.stop()
       this.initData()
       this.$nextTick(function () {
         this.initDragTickZoom()
+        this.force.restart()
       })
     },
     linkDistance: function () {
+      this.force.stop()
       this.initData()
       this.$nextTick(function () {
         this.initDragTickZoom()
+        this.force.restart()
       })
     },
     nodes: function () {
+      this.force.stop()
       this.initData()
       this.$nextTick(function () {
         // 以下这个函数重新在 node 上调用了拖拽
         // 只有在 mounted 后才有用
         // 所以要使用 $nextTick
         this.initDragTickZoom()
+        this.force.restart()
       })
     },
   },
@@ -268,15 +274,15 @@ export default {
       this.force = d3
         .forceSimulation(this.nodes)
         .force(
-          'link',
+          "link",
           d3
             .forceLink(this.links)
             .id((d) => d.id)
             .distance(this.linkDistance)
         )
-        .force('charge', d3.forceManyBody().strength(this.bodyStrength)) //The strength of the attraction or repulsion
+        .force("charge", d3.forceManyBody().strength(this.bodyStrength)) //The strength of the attraction or repulsion
         .force(
-          'center',
+          "center",
           d3.forceCenter(this.svgSize.width / 2, this.svgSize.height / 2)
         )
 
@@ -285,42 +291,45 @@ export default {
     },
     initDragTickZoom() {
       // 给节点添加拖拽
-      d3.selectAll('.node').call(this.drag(this.force))
-      this.force.on('tick', () => {
+      d3.selectAll(".node").call(this.drag(this.force))
+      this.force.on("tick", () => {
         // 更新连线坐标
-        d3.selectAll('.link')
+        d3.selectAll(".link")
           .data(this.links)
-          .attr('x1', (d) => d.source.x)
-          .attr('y1', (d) => d.source.y)
-          .attr('x2', (d) => d.target.x)
-          .attr('y2', (d) => d.target.y)
+          .attr("x1", (d) => d.source.x)
+          .attr("y1", (d) => d.source.y)
+          .attr("x2", (d) => d.target.x)
+          .attr("y2", (d) => d.target.y)
         // 更新节点坐标
-        d3.selectAll('.rect')
+        d3.selectAll(".rect")
           .data(this.nodes)
-          .attr('x', (d) => d.x + 5)
-          .attr('y', (d) => d.y - 15)
-        d3.selectAll('.node')
+          .attr("x", (d) => d.x + 5)
+          .attr("y", (d) => d.y - 15)
+        d3.selectAll(".node")
           .data(this.nodes)
-          .attr('cx', (d) => d.x)
-          .attr('cy', (d) => d.y)
+          .attr("cx", (d) => {
+            console.log(d.id, d.x)
+            return d.x
+          })
+          .attr("cy", (d) => d.y)
         // 更新文字坐标
-        d3.selectAll('.node-text')
+        d3.selectAll(".node-text")
           .data(this.nodes)
-          .attr('x', (d) => d.x)
-          .attr('y', (d) => d.y)
-        d3.selectAll('.link-text')
+          .attr("x", (d) => d.x)
+          .attr("y", (d) => d.y)
+        d3.selectAll(".link-text")
           .data(this.links)
-          .attr('x', (d) => (d.source.x + d.target.x) / 2)
-          .attr('y', (d) => (d.source.y + d.target.y) / 2)
+          .attr("x", (d) => (d.source.x + d.target.x) / 2)
+          .attr("y", (d) => (d.source.y + d.target.y) / 2)
       })
 
       // 初始化 zoom
-      this.zoom.scaleExtent([0.1, 4]).on('zoom', this.zoomed)
+      this.zoom.scaleExtent([0.1, 4]).on("zoom", this.zoomed)
 
-      d3.select('svg').call(this.zoom).on('dblclick.zoom', null)
+      d3.select("svg").call(this.zoom).on("dblclick.zoom", null)
     },
     clickLink(e) {
-      this.$emit('clickLink', e, e.target.__data__)
+      this.$emit("clickLink", e, e.target.__data__)
     },
     clickNode(e) {
       let focus = false
@@ -330,42 +339,42 @@ export default {
         focus = true
       } else {
         // 如果已經有被點選的
-        d3.selectAll('.element').style('opacity', 0.2)
+        d3.selectAll(".element").style("opacity", 0.2)
         this.pinned = []
         focus = false
       }
-      this.$emit('clickNode', e, e.target.__data__)
-      if (!focus) this.$emit('deFocus')
+      this.$emit("clickNode", e, e.target.__data__)
+      if (!focus) this.$emit("deFocus")
     },
     clickEle(e) {
-      if (e.target.tagName === 'circle') {
+      if (e.target.tagName === "circle") {
         this.clickNode(e)
-      } else if (e.target.tagName === 'line') {
+      } else if (e.target.tagName === "line") {
         this.clickLink(e)
       }
     },
     svgMouseover(e) {
-      if (e.target.nodeName === 'circle') {
+      if (e.target.nodeName === "circle") {
         if (this.pinned.length === 0) {
           this.selectedState(e)
         }
         // 强制刷新
         this.$forceUpdate()
-        this.$emit('hoverNode', e, e.target.__data__)
-      } else if (e.target.nodeName === 'line') {
+        this.$emit("hoverNode", e, e.target.__data__)
+      } else if (e.target.nodeName === "line") {
         // 显示关系文本
         this.linkTextPosition = {
-          left: e.clientX + 'px',
-          top: e.clientY - 50 + 'px',
+          left: e.clientX + "px",
+          top: e.clientY - 50 + "px",
         }
         this.linkTextContent = e.target.__data__[this.linkTextKey]
         this.linkTextVisible = true
-        this.$emit('hoverLink', e, e.target.__data__)
+        this.$emit("hoverLink", e, e.target.__data__)
       }
     },
     svgMouseout(e) {
       this.linkTextVisible = false
-      if (e.target.nodeName === 'circle') {
+      if (e.target.nodeName === "circle") {
         if (this.pinned.length === 0) {
           this.noSelectedState(e)
         }
@@ -376,12 +385,12 @@ export default {
     selectedState(e) {
       // 节点自身显示文字、增加 selected class、添加进 selection
       e.target.__data__.showText = true
-      e.target.classList.add('selected')
+      e.target.classList.add("selected")
       this.selection.nodes.push(e.target.__data__)
       // 周围节点显示文字、边和结点增加 selected class、添加进 selection
       this.lightNeibor(e.target.__data__)
       // 除了 selected 的其余节点透明度减小
-      d3.selectAll('.element').style('opacity', 0.2)
+      d3.selectAll(".element").style("opacity", 0.2)
     },
     noSelectedState(e) {
       // 节点自身不显示文字、移除 selected class
@@ -390,22 +399,22 @@ export default {
       // 周围节点不显示文字、边和结点移除 selected class
       this.darkenNerbor()
       // 所有节点透明度恢复
-      d3.selectAll('.element').style('opacity', 1)
+      d3.selectAll(".element").style("opacity", 1)
     },
     pinnedState(e) {
       this.pinned.push(e.target.__data__.index)
-      d3.selectAll('.element').style('opacity', 0.05)
+      d3.selectAll(".element").style("opacity", 0.05)
     },
     lightNeibor(node) {
       this.links.forEach((link) => {
         if (link.source.index === node.index) {
-          link.selected = 'selected'
+          link.selected = "selected"
           this.selection.links.push(link)
           this.selection.nodes.push(link.target)
           this.lightNode(link.target)
         }
         if (link.target.index === node.index) {
-          link.selected = 'selected'
+          link.selected = "selected"
           this.selection.links.push(link)
           this.selection.nodes.push(link.source)
           this.lightNode(link.source)
@@ -423,7 +432,7 @@ export default {
       this.links.forEach((link) => {
         this.selection.links.forEach((selectedLink) => {
           if (selectedLink.id === link.id) {
-            link.selected = ''
+            link.selected = ""
           }
         })
       })
@@ -440,20 +449,21 @@ export default {
     },
     zoomed() {
       // 缩放中：以鼠标所在的位置为中心
-      d3.select('#container').attr(
-        'transform',
-        'translate(' +
+      d3.select("#container").attr(
+        "transform",
+        "translate(" +
           d3.event.transform.x +
-          ',' +
+          "," +
           d3.event.transform.y +
-          ') scale(' +
+          ") scale(" +
           d3.event.transform.k +
-          ')'
+          ")"
       )
     },
     drag(simulation) {
       function dragstarted(d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart()
+        // if (!d3.event.active) simulation.alpha(0.3).restart()
         d.fx = d.x
         d.fy = d.y
       }
@@ -465,15 +475,16 @@ export default {
 
       function dragended(d) {
         if (!d3.event.active) simulation.alphaTarget(0)
+        // if (!d3.event.active) simulation.alpha(0)
         d.fx = null
         d.fy = null
       }
 
       return d3
         .drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended)
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
     },
   },
 }
