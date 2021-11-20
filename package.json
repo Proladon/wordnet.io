@@ -10,8 +10,10 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "d3": "5.9.2",
+    "lodash": "^4.17.21",
     "vue": "^2.6.11",
-    "vue-network-d3": "^0.1.2"
+    "vue-network-d3": "^0.1.2",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

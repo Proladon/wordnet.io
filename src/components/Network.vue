@@ -308,7 +308,6 @@ export default {
         d3.selectAll(".node")
           .data(this.nodes)
           .attr("cx", (d) => {
-            console.log(d.id, d.x)
             return d.x
           })
           .attr("cy", (d) => d.y)
