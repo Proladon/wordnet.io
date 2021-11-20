@@ -3,15 +3,15 @@ const network = {
   state: {
     selectedNode: null,
     nodes: [
-      // { id: "Myriel", group: 1 },
-      // { id: "Napoleon", group: 1 },
-      // { id: "test", group: 2 },
-      // { id: "apple", group: 3 },
+      // { id: 'Myriel', label: 'Myriel', group: 1, class: 1 },
+      // { id: 'Napoleon', label: 'Napoleon', group: 1, class: 1 },
+      // { id: 'test', label: 'test', group: 2, class: 2 },
+      // { id: 'test2', label: 'test2', group: 3, class: 3 },
     ],
     links: [
-      // { source: "test", target: "Myriel", value: 1 },
-      // { source: "Napoleon", target: "test", value: 1 },
-      // { source: "apple", target: "test", value: 2 },
+      // { source: 'test', target: 'Myriel', value: 1 },
+      // { source: 'Napoleon', target: 'test', value: 1 },
+      // { source: 'test2', target: 'test', value: 2 },
     ],
   },
   mutations: {

@@ -1,14 +1,15 @@
 <template>
   <div id="app">
     <Home />
+    <notifications position="top center" />
   </div>
 </template>
 
 <script>
-import Home from "@/views/Home.vue"
+import Home from '@/views/Home.vue'
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
     Home,
   },

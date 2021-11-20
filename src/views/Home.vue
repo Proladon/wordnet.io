@@ -9,6 +9,7 @@
             :nodeList="nodes"
             :linkList="links"
             showLinkText
+            nodeTextKey="label"
             @clear=";(nodes = []), (links = [])"
             @deleteNode="deleteNode"
             @clickNode="clickNode"

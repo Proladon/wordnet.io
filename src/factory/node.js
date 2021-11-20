@@ -1,6 +1,7 @@
 class NetNode {
-  constructor(id, group) {
+  constructor(id, label, group) {
     this.id = id
+    this.label = label
     this.group = group
   }
 }

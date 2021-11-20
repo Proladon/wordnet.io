@@ -1,8 +1,8 @@
 const layer = {
   namespaced: true,
   state: {
-    totalLayer: 0,
-    activatedLayer: 0,
+    totalLayer: 1,
+    activatedLayer: 1,
   },
   mutations: {
     SET_ACTIVATED_LAYER: (state, layer) => {
