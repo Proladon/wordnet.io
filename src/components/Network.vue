@@ -338,7 +338,7 @@ export default {
         focus = true
       } else {
         // 如果已經有被點選的
-        d3.selectAll('.element').style('opacity', 0.2)
+        // d3.selectAll('.element').style('opacity', 0.2)
         this.pinned = []
         focus = false
       }
@@ -389,7 +389,7 @@ export default {
       // 周围节点显示文字、边和结点增加 selected class、添加进 selection
       this.lightNeibor(e.target.__data__)
       // 除了 selected 的其余节点透明度减小
-      d3.selectAll('.element').style('opacity', 0.2)
+      d3.selectAll('.element').style('opacity', 0.2) // hover
     },
     noSelectedState(e) {
       // 节点自身不显示文字、移除 selected class
@@ -402,7 +402,7 @@ export default {
     },
     pinnedState(e) {
       this.pinned.push(e.target.__data__.index)
-      d3.selectAll('.element').style('opacity', 0.05)
+      d3.selectAll('.element').style('opacity', 0.05) // click
     },
     lightNeibor(node) {
       this.links.forEach((link) => {
@@ -499,8 +499,8 @@ svg {
 }
 .selected {
   opacity: 1 !important;
-  stroke: red;
-  stroke-width: 1px;
+  stroke: rgb(135, 235, 148);
+  stroke-width: 2px;
 }
 .node,
 .link {

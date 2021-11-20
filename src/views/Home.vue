@@ -10,10 +10,12 @@
             :linkList="links"
             showLinkText
             nodeTextKey="label"
+            nodeTypeKey="layer"
+            linkTextKey="label"
             @clear=";(nodes = []), (links = [])"
             @deleteNode="deleteNode"
             @clickNode="clickNode"
-            @deFocus="selectedNode = null"
+            @deFocus="deFocus"
           />
           <InputPane class="absolute bottom-0 left-0 right-0" />
         </div>
@@ -76,7 +78,11 @@ export default {
     },
 
     clickNode(e, node) {
-      this.selectedNode = node
+      // this.selectedNode = node
+      this.$store.commit('network/SET_SELECTED_NODES', node)
+    },
+    deFocus() {
+      this.$store.commit('network/SET_SELECTED_NODES', null)
     },
   },
 }

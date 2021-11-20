@@ -1,8 +1,9 @@
 class NetNode {
-  constructor(id, label, group) {
+  constructor(id, label, closeness, layer) {
     this.id = id
     this.label = label
-    this.group = group
+    this.layer = layer
+    this.closeness = closeness
   }
 }
 
