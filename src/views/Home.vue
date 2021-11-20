@@ -2,29 +2,47 @@
   <div class="home">
     <LayerPane />
 
-    <network
-      :nodeList="nodes"
-      :linkList="links"
-      showLinkText
-      @clear=";(nodes = []), (links = [])"
-      @deleteNode="deleteNode"
-      @clickNode="clickNode"
-      @deFocus="selectedNode = null"
-    />
+    <splitpanes class="default-theme overflow-hidden">
+      <pane :key="0" size="80">
+        <div class="relative">
+          <network
+            :nodeList="nodes"
+            :linkList="links"
+            showLinkText
+            @clear=";(nodes = []), (links = [])"
+            @deleteNode="deleteNode"
+            @clickNode="clickNode"
+            @deFocus="selectedNode = null"
+          />
+          <InputPane class="absolute bottom-0 left-0 right-0" />
+        </div>
+      </pane>
+      <pane :key="1" size="20">
+        <div class="w-full h-full bg-gray-800 text-gray-600 p-5">
+          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Possimus
+          itaque veniam unde. Sit obcaecati culpa, labore, similique assumenda
+          illo nihil sunt porro sed a alias maxime fuga odit. Perspiciatis,
+          ipsa?
+        </div>
+      </pane>
+    </splitpanes>
   </div>
 </template>
 
 <script>
-import LayerPane from "@/components/LayerPane.vue"
-import Network from "@/components/Network"
-import { filter, difference } from "lodash"
-import { mapState } from "vuex"
+import LayerPane from '@/components/LayerPane.vue'
+import InputPane from '@/components/InputPane.vue'
+import Network from '@/components/Network'
+import { Splitpanes, Pane } from 'splitpanes'
+import 'splitpanes/dist/splitpanes.css'
+import { filter, difference } from 'lodash'
+import { mapState } from 'vuex'
 
 export default {
-  name: "Home",
-  components: { LayerPane, Network },
+  name: 'Home',
+  components: { LayerPane, Network, Splitpanes, Pane, InputPane },
   computed: {
-    ...mapState("network", ["nodes", "links"]),
+    ...mapState('network', ['nodes', 'links']),
   },
 
   methods: {
@@ -40,7 +58,7 @@ export default {
           target: this.selectedNode.id,
         })
       }
-      this.inputVal = ""
+      this.inputVal = ''
     },
 
     deleteNode(node) {
@@ -65,6 +83,6 @@ export default {
 
 <style scoped lang="postcss">
 .home {
-  @apply grid grid-flow-col  w-full h-full overflow-hidden;
+  @apply flex w-full h-full;
 }
 </style>

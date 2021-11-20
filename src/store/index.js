@@ -1,8 +1,8 @@
-import Vue from "vue"
-import Vuex from "vuex"
-import layer from "@/store/modules/layer"
-import network from "@/store/modules/network"
-import getters from "@/store/getters"
+import Vue from 'vue'
+import Vuex from 'vuex'
+import layer from '@/store/modules/layer'
+import network from '@/store/modules/network'
+import getters from '@/store/getters'
 
 Vue.use(Vuex)
 

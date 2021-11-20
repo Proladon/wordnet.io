@@ -16,12 +16,12 @@
 </template>
 
 <script>
-import { mapState } from "vuex"
+import { mapState } from 'vuex'
 
 export default {
-  name: "LayerPane",
+  name: 'LayerPane',
   computed: {
-    ...mapState("layer", ["totalLayer", "activatedLayer"]),
+    ...mapState('layer', ['totalLayer', 'activatedLayer']),
     preLayer() {
       if (this.activatedLayer === 0) return 0
       return this.activatedLayer - 1
@@ -33,12 +33,12 @@ export default {
 
   methods: {
     addLayer() {
-      this.$store.commit("layer/SET_TOTAL_LAYER", this.totalLayer + 1)
-      this.$store.commit("layer/SET_ACTIVATED_LAYER", this.totalLayer)
+      this.$store.commit('layer/SET_TOTAL_LAYER', this.totalLayer + 1)
+      this.$store.commit('layer/SET_ACTIVATED_LAYER', this.totalLayer)
     },
 
     selectLayer(layer) {
-      this.$store.commit("layer/SET_ACTIVATED_LAYER", layer)
+      this.$store.commit('layer/SET_ACTIVATED_LAYER', layer)
     },
   },
 }
@@ -47,7 +47,7 @@ export default {
 <style scoped lang="postcss">
 .layer-pane {
   @apply flex flex-col gap-2  bg-gray-800 text-white;
-  @apply p-5 h-full w-full;
+  @apply p-5 h-full w-full w-[200px];
 }
 
 .layer-btn {
