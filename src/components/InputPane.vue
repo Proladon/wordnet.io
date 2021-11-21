@@ -27,7 +27,7 @@ export default {
   name: 'InputPane',
   data: () => ({
     label: '',
-    closeness: null,
+    closeness: '',
   }),
   computed: {
     ...mapState('network', ['nodes', 'selectedNode']),
@@ -48,12 +48,12 @@ export default {
       if (!this.label.trim())
         return this.$notify({
           type: 'warn',
-          text: '請輸入內容',
+          text: '請輸入關鍵字',
         })
       if (!this.closeness.trim())
         return this.$notify({
           type: 'warn',
-          text: '請輸入權重',
+          text: '請輸入字詞權重',
         })
 
       if (this.checkRepeatNode())
@@ -66,7 +66,7 @@ export default {
       this.addLink()
 
       this.label = ''
-      this.closeness = null
+      this.closeness = ''
     },
 
     addNode() {

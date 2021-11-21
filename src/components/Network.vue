@@ -169,7 +169,7 @@ export default {
     },
     bodyStrength: {
       type: Number,
-      default: -150,
+      default: -100,
     },
     // others
     highlightNodes: {
@@ -188,7 +188,7 @@ export default {
       pinned: [], // 被订住的节点的下标
       force: null,
       zoom: d3.zoom(),
-      nodeColor: d3.scaleOrdinal(d3.schemeCategory10),
+      nodeColor: d3.scaleOrdinal(d3.schemeTableau10),
       linkTextVisible: false,
       linkTextPosition: {
         top: 0,
@@ -386,6 +386,7 @@ export default {
       e.target.__data__.showText = true
       e.target.classList.add('selected')
       this.selection.nodes.push(e.target.__data__)
+      this.$store.commit('network/ADD_REF_NODES', e.target.__data__)
       // 周围节点显示文字、边和结点增加 selected class、添加进 selection
       this.lightNeibor(e.target.__data__)
       // 除了 selected 的其余节点透明度减小
@@ -410,12 +411,14 @@ export default {
           link.selected = 'selected'
           this.selection.links.push(link)
           this.selection.nodes.push(link.target)
+          this.$store.commit('network/ADD_REF_NODES', link.target)
           this.lightNode(link.target)
         }
         if (link.target.index === node.index) {
           link.selected = 'selected'
           this.selection.links.push(link)
           this.selection.nodes.push(link.source)
+          this.$store.commit('network/ADD_REF_NODES', link.source)
           this.lightNode(link.source)
         }
       })
@@ -444,6 +447,7 @@ export default {
       })
       // 清空 selection
       this.selection.nodes = []
+      this.$store.commit('network/SET_REF_NODES', [])
       this.selection.links = []
     },
     zoomed() {
@@ -499,7 +503,7 @@ svg {
 }
 .selected {
   opacity: 1 !important;
-  stroke: rgb(135, 235, 148);
+  stroke: rgb(132, 251, 85);
   stroke-width: 2px;
 }
 .node,

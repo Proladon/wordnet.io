@@ -21,11 +21,8 @@
         </div>
       </pane>
       <pane :key="1" size="20">
-        <div class="w-full h-full bg-gray-800 text-gray-600 p-5">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Possimus
-          itaque veniam unde. Sit obcaecati culpa, labore, similique assumenda
-          illo nihil sunt porro sed a alias maxime fuga odit. Perspiciatis,
-          ipsa?
+        <div class="w-full h-full bg-gray-800 text-gray-400 p-5">
+          <DataPane />
         </div>
       </pane>
     </splitpanes>
@@ -35,6 +32,7 @@
 <script>
 import LayerPane from '@/components/LayerPane.vue'
 import InputPane from '@/components/InputPane.vue'
+import DataPane from '@/components/DataPane.vue'
 import Network from '@/components/Network'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
@@ -43,7 +41,7 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'Home',
-  components: { LayerPane, Network, Splitpanes, Pane, InputPane },
+  components: { LayerPane, Network, Splitpanes, Pane, InputPane, DataPane },
   computed: {
     ...mapState('network', ['nodes', 'links']),
   },

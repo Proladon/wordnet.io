@@ -2,6 +2,7 @@ const network = {
   namespaced: true,
   state: {
     selectedNode: null,
+    refNodes: [],
     nodes: [
       // { id: 'Myriel', label: 'Myriel', layer: 1, class: 1 },
       // { id: 'Napoleon', label: 'Napoleon', layer: 1, class: 1 },
@@ -17,6 +18,12 @@ const network = {
   mutations: {
     SET_SELECTED_NODES: (state, node) => {
       state.selectedNode = node
+    },
+    SET_REF_NODES: (state, data) => {
+      state.refNodes = data
+    },
+    ADD_REF_NODES: (state, node) => {
+      state.refNodes.push(node)
     },
     SET_NODES: (state, data) => {
       state.nodes = data
