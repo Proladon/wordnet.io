@@ -21,7 +21,7 @@
       @contextmenu.prevent="$emit('clear')"
     >
       <g id="container">
-        <!-- links and link-text 注：先绘制边 -->
+        <!-- links and link-text 注：先绘制邊 -->
         <g>
           <g v-for="link in links" :key="link.index">
             <line
@@ -54,7 +54,7 @@
                   ? theme.nodeStroke
                   : 'gold'
               "
-              :class="`${node[nodeTypeKey]} ${
+              :class="`layer-${node[nodeTypeKey]} ${
                 node.showText ? 'selected' : ''
               } node element`"
               :r="nodeSize"
@@ -92,6 +92,7 @@
 
 <script>
 import * as d3 from 'd3'
+import { mapState } from 'vuex'
 // import * as d3Force from 'd3-force'
 // import * as d3Zoom from 'd3-zoom'
 // import * as d3Scale from 'd3-scale'
@@ -185,7 +186,7 @@ export default {
         links: [],
         nodes: [],
       },
-      pinned: [], // 被订住的节点的下标
+      pinned: [], // 被釘住的節點的下標
       force: null,
       zoom: d3.zoom(),
       nodeColor: d3.scaleOrdinal(d3.schemeTableau10),
@@ -198,8 +199,9 @@ export default {
     }
   },
   computed: {
+    ...mapState('layer', ['activatedLayer']),
     nodes() {
-      // 去重
+      // 節點去重
       let nodes = this.nodeList.slice()
       let nodeIds = []
       nodes = nodes.filter((node) => {
@@ -235,6 +237,10 @@ export default {
     },
   },
   watch: {
+    activatedLayer() {
+      d3.selectAll(`circle`).attr('r', 10)
+      d3.selectAll(`.layer-${this.activatedLayer}`).attr('r', 15)
+    },
     bodyStrength: function () {
       this.force.stop()
       this.initData()
@@ -255,8 +261,8 @@ export default {
       this.force.stop()
       this.initData()
       this.$nextTick(function () {
-        // 以下这个函数重新在 node 上调用了拖拽
-        // 只有在 mounted 后才有用
+        // 以下這個函數重新在 node 上調用了拖拽
+        // 只有在 mounted 後才有用
         // 所以要使用 $nextTick
         this.initDragTickZoom()
         this.force.restart()
@@ -290,17 +296,17 @@ export default {
       // console.log(this.links);
     },
     initDragTickZoom() {
-      // 给节点添加拖拽
+      // 給節點添加拖拽
       d3.selectAll('.node').call(this.drag(this.force))
       this.force.on('tick', () => {
-        // 更新连线坐标
+        // 更新連線座標
         d3.selectAll('.link')
           .data(this.links)
           .attr('x1', (d) => d.source.x)
           .attr('y1', (d) => d.source.y)
           .attr('x2', (d) => d.target.x)
           .attr('y2', (d) => d.target.y)
-        // 更新节点坐标
+        // 更新節點座標
         d3.selectAll('.rect')
           .data(this.nodes)
           .attr('x', (d) => d.x + 5)
@@ -311,7 +317,7 @@ export default {
             return d.x
           })
           .attr('cy', (d) => d.y)
-        // 更新文字坐标
+        // 更新文字座標
         d3.selectAll('.node-text')
           .data(this.nodes)
           .attr('x', (d) => d.x)
@@ -361,7 +367,7 @@ export default {
         this.$forceUpdate()
         this.$emit('hoverNode', e, e.target.__data__)
       } else if (e.target.nodeName === 'line') {
-        // 显示关系文本
+        // 顯示連線關係文字
         this.linkTextPosition = {
           left: e.clientX + 'px',
           top: e.clientY - 50 + 'px',
@@ -382,23 +388,23 @@ export default {
       }
     },
     selectedState(e) {
-      // 节点自身显示文字、增加 selected class、添加进 selection
+      // 節點自身顯示文字、增加 selected class、添加進 selection
       e.target.__data__.showText = true
       e.target.classList.add('selected')
       this.selection.nodes.push(e.target.__data__)
       this.$store.commit('network/ADD_REF_NODES', e.target.__data__)
-      // 周围节点显示文字、边和结点增加 selected class、添加进 selection
+      // 周圍節點顯示文字、邊和節點增加 selected class、添加進 selection
       this.lightNeibor(e.target.__data__)
-      // 除了 selected 的其余节点透明度减小
+      // 除了 selected 的其餘節點透明度減小
       d3.selectAll('.element').style('opacity', 0.2) // hover
     },
     noSelectedState(e) {
-      // 节点自身不显示文字、移除 selected class
+      // 節點自身不顯示文字、移除 selected class
       e.target.__data__.showText = false
       // e.target.classList.remove("selected");
-      // 周围节点不显示文字、边和结点移除 selected class
+      // 周圍節點不顯示文字、邊和節點移除 selected class
       this.darkenNerbor()
-      // 所有节点透明度恢复
+      // 所有節點透明度恢復
       d3.selectAll('.element').style('opacity', 1)
     },
     pinnedState(e) {
@@ -451,7 +457,7 @@ export default {
       this.selection.links = []
     },
     zoomed() {
-      // 缩放中：以鼠标所在的位置为中心
+      // 縮放中：以鼠標所在的位置為中心
       d3.select('#container').attr(
         'transform',
         'translate(' +

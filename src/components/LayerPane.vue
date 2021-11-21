@@ -11,7 +11,7 @@
         Layer {{ layer }}
       </div>
       <div class="add-layer-btn" @click="addLayer">
-        addLayer {{ totalLayer + 1 }}
+        + Layer {{ totalLayer + 1 }}
       </div>
     </section>
 
@@ -59,7 +59,8 @@ export default {
   @apply p-5 h-full w-full w-[200px];
 }
 
-.layer-btn {
+.layer-btn,
+.add-layer-btn {
   @apply cursor-pointer rounded-md;
   @apply my-[5px] py-[2px];
 }
@@ -69,7 +70,7 @@ export default {
 }
 
 .add-layer-btn {
-  @apply cursor-pointer;
+  @apply border-dashed border-1;
 }
 
 #export-btn {

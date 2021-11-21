@@ -68,6 +68,7 @@ export default {
     },
 
     deleteRefLink(node) {
+      // FIXME 有bug
       const removes = filter(this.links, (link) => {
         return link.source.id === node.id || link.target.id === node.id
       })
