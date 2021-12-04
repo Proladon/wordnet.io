@@ -16,6 +16,14 @@
     </section>
 
     <section>
+      <label for="import">Import</label>
+      <input
+        class="hidden"
+        @input="importCSV"
+        type="file"
+        name=""
+        id="import"
+      />
       <download-csv :data="nodes">
         <div id="export-btn">Export</div>
       </download-csv>
@@ -25,6 +33,10 @@
 
 <script>
 import { mapState } from 'vuex'
+import csv2json from 'csvjson-csv2json'
+// import { forEach } from 'lodash'
+// import NetNode from '@/factory/node'
+// import NetLink from '@/factory/link'
 
 export default {
   name: 'LayerPane',
@@ -48,6 +60,28 @@ export default {
 
     selectLayer(layer) {
       this.$store.commit('layer/SET_ACTIVATED_LAYER', layer)
+    },
+
+    preSetCSVData(data) {
+      console.log(data)
+      // forEach(data, item => {
+      //   const node = new NetNode(
+      //     `${this.activatedLayer}-${item.Label.trim()}`,
+      //   this.label.trim(),
+      //   Number(this.closeness),
+      //   this.activatedLayer
+      //   )
+      // })
+    },
+
+    importCSV(e) {
+      let file = e.target.files[0]
+      let reader = new FileReader()
+      reader.onload = () => {
+        const csvArray = csv2json(reader.result, { parseNumbers: true })
+        console.log(csvArray)
+      }
+      reader.readAsText(file)
     },
   },
 }

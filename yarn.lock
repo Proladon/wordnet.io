@@ -3014,6 +3014,11 @@ csso@^4.0.2:
   dependencies:
     css-tree "^1.1.2"
 
+csvjson-csv2json@^5.0.6:
+  version "5.0.6"
+  resolved "https://registry.yarnpkg.com/csvjson-csv2json/-/csvjson-csv2json-5.0.6.tgz#b056f77dd3c13a2f550ada1c31f05072aad6ff3a"
+  integrity sha512-to9QlVI4yQFPzSqi6XZ97lULKs5m3K8hlE/UkbvKSw81FfDwgV9MUtSbHFJ4SRT4IA7UPkuW2EqsH/MWN5YRow==
+
 cyclist@^1.0.1:
   version "1.0.1"
   resolved "https://registry.nlark.com/cyclist/download/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
