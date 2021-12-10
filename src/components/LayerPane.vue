@@ -34,8 +34,8 @@
 <script>
 import { mapState } from 'vuex'
 import csv2json from 'csvjson-csv2json'
-// import { forEach } from 'lodash'
-// import NetNode from '@/factory/node'
+import { forEach } from 'lodash'
+import NetNode from '@/factory/node'
 // import NetLink from '@/factory/link'
 
 export default {
@@ -62,16 +62,20 @@ export default {
       this.$store.commit('layer/SET_ACTIVATED_LAYER', layer)
     },
 
-    preSetCSVData(data) {
+    parseCSVData(data) {
       console.log(data)
-      // forEach(data, item => {
-      //   const node = new NetNode(
-      //     `${this.activatedLayer}-${item.Label.trim()}`,
-      //   this.label.trim(),
-      //   Number(this.closeness),
-      //   this.activatedLayer
-      //   )
-      // })
+      const list = []
+      forEach(data, (item) => {
+        const node = new NetNode(
+          `1-${item.Label}`,
+          item.Label,
+          Number(this.closeness),
+          1
+        )
+        list.push(node)
+      })
+
+      this.$store.commit('network/SET_NODES', list)
     },
 
     importCSV(e) {
@@ -79,7 +83,7 @@ export default {
       let reader = new FileReader()
       reader.onload = () => {
         const csvArray = csv2json(reader.result, { parseNumbers: true })
-        console.log(csvArray)
+        this.parseCSVData(csvArray)
       }
       reader.readAsText(file)
     },
