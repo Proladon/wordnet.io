@@ -1,9 +1,10 @@
 <template>
   <div class="home">
-    <LayerPane />
-
     <splitpanes class="default-theme overflow-hidden">
-      <pane :key="0" size="80">
+      <pane :key="0" size="20">
+        <LayerPane />
+      </pane>
+      <pane :key="1" size="60">
         <div class="relative">
           <network
             :nodeList="nodes"
@@ -20,7 +21,7 @@
           <InputPane class="absolute bottom-0 left-0 right-0" />
         </div>
       </pane>
-      <pane :key="1" size="20">
+      <pane :key="2" size="20">
         <div class="w-full h-full bg-gray-800 text-gray-400 p-5">
           <DataPane />
         </div>

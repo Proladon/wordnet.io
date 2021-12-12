@@ -11,6 +11,7 @@
     "core-js": "^3.6.5",
     "csvjson-csv2json": "^5.0.6",
     "d3": "5.9.2",
+    "element-ui": "^2.15.6",
     "lodash": "^4.17.21",
     "splitpanes": "^2.3.8",
     "velocity-animate": "^1.5.2",

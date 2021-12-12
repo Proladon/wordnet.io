@@ -1,20 +1,16 @@
 <template>
   <div class="input-pane" v-if="showPane">
-    <input
-      style="margin-right: 10px"
-      type="text"
-      placeholder="關鍵字"
-      v-model="label"
-    />
-    <input
-      style="margin-right: 10px"
-      type="number"
-      max="100"
-      min="0"
-      placeholder="字詞權重"
-      v-model="closeness"
-    />
-    <button id="add-node-btn" @click="handleAddNode">新增節點</button>
+    <div class="input-container">
+      <el-input placeholder="關鍵字" v-model="label" />
+      <el-input
+        type="number"
+        min="0"
+        placeholder="字詞權重"
+        v-model="closeness"
+      />
+    </div>
+
+    <div class="add-node-btn" @click="handleAddNode">Add Node</div>
   </div>
 </template>
 
@@ -45,22 +41,10 @@ export default {
   },
   methods: {
     handleAddNode() {
-      if (!this.label.trim())
-        return this.$notify({
-          type: 'warn',
-          text: '請輸入關鍵字',
-        })
-      if (!this.closeness.trim())
-        return this.$notify({
-          type: 'warn',
-          text: '請輸入字詞權重',
-        })
+      if (!this.label.trim()) return this.$message.warning('請輸入關鍵字')
+      if (!this.closeness.trim()) return this.$message.warning('請輸入字詞權重')
 
-      if (this.checkRepeatNode())
-        return this.$notify({
-          type: 'warn',
-          text: '節點已存在',
-        })
+      if (this.checkRepeatNode()) return this.$message.warning('節點已存在')
 
       this.addNode()
       this.addLink()
@@ -107,7 +91,13 @@ export default {
   @apply flex justify-center items-center;
 }
 
-#add-node-btn {
-  @apply border-teal-400 border-1 rounded-md px-2 text-teal-400;
+.input-container {
+  @apply grid gap-[10px] grid-cols-2 w-full w-[500px];
+}
+
+.add-node-btn {
+  @apply flex-shrink-0 ml-[10px] py-[7.5px] px-[10px] cursor-pointer rounded-md font-medium bg-emerald-300 text-center;
+  @apply hover:bg-opacity-50;
+  transition: 0.3s;
 }
 </style>
