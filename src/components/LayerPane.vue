@@ -54,7 +54,7 @@
 <script>
 import { mapState } from 'vuex'
 import csv2json from 'csvjson-csv2json'
-import { forEach } from 'lodash'
+import { forEach, filter } from 'lodash'
 import NetNode from '@/factory/node'
 // import NetLink from '@/factory/link'
 import ImportWarningModalVue from '@/components/LayerPane/ImportWarningModal.vue'
@@ -63,7 +63,7 @@ export default {
   name: 'LayerPane',
   components: { ImportWarningModalVue },
   computed: {
-    ...mapState('network', ['nodes']),
+    ...mapState('network', ['nodes', 'links']),
     ...mapState('layer', ['totalLayer', 'activatedLayer']),
     preLayer() {
       if (this.activatedLayer === 0) return 0
@@ -115,7 +115,33 @@ export default {
     },
 
     deleteLayer(layer) {
-      console.log(layer)
+      const nodesRef = JSON.parse(JSON.stringify(this.nodes))
+      const linksRef = JSON.parse(JSON.stringify(this.links))
+
+      // 刪除當前層與大於層的節點
+      const layerNodes = filter(
+        nodesRef,
+        (node) => node.layer !== layer && node.layer < layer
+      )
+      this.$store.commit('network/SET_NODES', layerNodes)
+
+      // 刪除當前層與大於層的連線
+      const layerLinks = filter(linksRef, (link) => {
+        return (
+          link.source.layer !== layer &&
+          link.target.layer !== layer &&
+          link.target.layer < layer &&
+          link.source.layer < layer
+        )
+      })
+      this.$store.commit('network/SET_LINKS', layerLinks)
+
+      // 刪除當前層與大於的層
+
+      this.$store.commit('layer/SET_TOTAL_LAYER', layer - 1)
+      this.$store.commit('layer/SET_ACTIVATED_LAYER', layer - 1)
+
+      // FIXME 刪除後 index 不會更新導致連線有問題
     },
 
     importNodes() {
