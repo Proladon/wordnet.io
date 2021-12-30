@@ -1,6 +1,7 @@
 <template>
   <div class="layer-pane">
-    <section>
+    <LayerSettings />
+    <section class="overflow-y-auto flex-1">
       <div
         class="flex items-center justify-between gap-5"
         v-for="layer in totalLayer"
@@ -52,16 +53,18 @@
 </template>
 
 <script>
+import NetNode from '@/factory/node'
+import NetLink from '@/factory/link'
 import { mapState } from 'vuex'
 import csv2json from 'csvjson-csv2json'
-import { forEach, filter } from 'lodash'
-import NetNode from '@/factory/node'
-// import NetLink from '@/factory/link'
+import { forEach, filter, clone } from 'lodash'
+import LayerSettings from '@/components/LayerPane/LayerSettings.vue'
 import ImportWarningModalVue from '@/components/LayerPane/ImportWarningModal.vue'
+import {api} from '@/utils/axios'
 
 export default {
   name: 'LayerPane',
-  components: { ImportWarningModalVue },
+  components: { ImportWarningModalVue, LayerSettings },
   computed: {
     ...mapState('network', ['nodes', 'links']),
     ...mapState('layer', ['totalLayer', 'activatedLayer']),
@@ -78,9 +81,51 @@ export default {
   }),
 
   methods: {
-    addLayer() {
+    async addLayer() {
       this.$store.commit('layer/SET_TOTAL_LAYER', this.totalLayer + 1)
       this.$store.commit('layer/SET_ACTIVATED_LAYER', this.totalLayer)
+      await this.searchRelates()
+    },
+
+    async searchRelates() {
+      if(!this.nodes.length) return
+      
+      for(const node of clone(this.nodes)) {
+        const [res] = await api({
+          method: 'get',
+          url: `/en/${node.label}`
+        })
+        const relations = res.edges
+        console.log(relations)
+
+        relations.forEach(relate => {
+          const start = relate.start.label
+          const end = relate.end.label
+          const label = node.label === start ? end : start
+
+          this.addNode(label)
+          this.addLink(node, label)
+        })
+      }
+    },
+
+    addNode(label) {
+      const node = new NetNode(
+        `${this.nextLayer}-${label}`,
+        label,
+        0,
+        this.nextLayer
+      )
+      this.$store.commit('network/ADD_NODES', node)
+    },
+
+    addLink(node, label) {
+      const link = new NetLink(
+        `${this.nextLayer}-${label}`,
+        node.id,
+        ''
+      )
+      this.$store.commit('network/ADD_LINKS', link)
     },
 
     selectLayer(layer) {

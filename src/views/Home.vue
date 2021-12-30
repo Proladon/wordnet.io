@@ -48,21 +48,6 @@ export default {
   },
 
   methods: {
-    addNode() {
-      if (!this.inputVal.trim() || !this.curLayer) return
-      this.nodes.push({
-        id: this.inputVal,
-        group: this.curLayer,
-      })
-      if (this.curLayer > 1) {
-        this.links.push({
-          source: this.inputVal,
-          target: this.selectedNode.id,
-        })
-      }
-      this.inputVal = ''
-    },
-
     deleteNode(node) {
       this.nodes.splice(node.index, 1)
       this.deleteRefLink(node)
