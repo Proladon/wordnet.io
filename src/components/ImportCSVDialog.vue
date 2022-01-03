@@ -5,11 +5,11 @@
     @close="$emit('close')"
     width="30%"
   >
-    <el-button
+    <vs-button
       class="w-full"
       type="success"
       @click="$refs['nodeImport'].click()"
-      >Import Nodes</el-button
+      >Import Nodes</vs-button
     >
     <input
       class="hidden"
@@ -20,11 +20,11 @@
       id="import"
     />
 
-    <el-button
+    <vs-button
       class="w-full"
       type="success"
       @click="$refs['linkImport'].click()"
-      >Import Links</el-button
+      >Import Links</vs-button
     >
     <input
       class="hidden"

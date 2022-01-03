@@ -1,28 +1,26 @@
 <template>
   <div class="layer-pane">
     <LayerSettings />
-    <section class="overflow-y-auto flex-1">
+    <section class="overflow-y-auto flex-1 flex flex-col gap-3">
       <div
         class="flex items-center justify-between gap-5"
         v-for="layer in totalLayer"
         :key="layer"
       >
-        <div
-          class="primary-btn layer-btn"
+        <vs-button
+        class="w-full"
+        color="#6EE7B7" type="filled"
           :class="{ 'de-avtivated': activatedLayer !== layer }"
           @click="selectLayer(layer)"
         >
           Layer {{ layer }}
-        </div>
-        <i
-          class="el-icon-delete-solid delete-layer-btn"
-          @click="deleteLayer(layer)"
-        />
+        </vs-button>
+        <vs-button @click="deleteLayer(layer)" color="danger" type="filled" icon="delete" />
       </div>
 
-      <div class="primary-btn add-layer-btn" @click="addLayer">
+      <vs-button class="w-full mt-[20px] " color="primary" type="filled" @click="addLayer">
         + Layer {{ totalLayer + 1 }}
-      </div>
+      </vs-button>
     </section>
 
     <section>
@@ -210,7 +208,7 @@ export default {
   @apply hover:bg-opacity-70;
 }
 .de-avtivated {
-  @apply bg-gray-400;
+  @apply !bg-gray-600;
 }
 
 .add-layer-btn {

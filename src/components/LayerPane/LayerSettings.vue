@@ -1,8 +1,8 @@
 <template>
   <section class="layer-settings">
-    <el-select v-model="order">
-      <el-option v-for="option in options" :key="option" :value="option">{{option}}</el-option>
-    </el-select>
+    <vs-select label="filter" v-model="order">
+      <vs-select-item  :key="item" :value="item.value" :text="item" v-for="item in options"  />
+    </vs-select>
   </section>
 </template>
 

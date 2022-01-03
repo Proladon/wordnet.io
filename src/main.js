@@ -6,12 +6,17 @@ import velocity from 'velocity-animate'
 import JsonCSV from 'vue-json-csv'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+import Vuesax from 'vuesax'
+import 'vuesax/dist/vuesax.css'
+import 'material-icons/iconfont/material-icons.css';
 import 'windi.css'
 import '@/styles/index.css'
 
 Vue.config.productionTip = false
 
 Vue.use(ElementUI)
+Vue.use(Vuesax)
+
 Vue.component('downloadCsv', JsonCSV)
 Vue.use(Notifications, { velocity })
 
