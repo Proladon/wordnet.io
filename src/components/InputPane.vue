@@ -1,17 +1,19 @@
 <template>
-  <div class="input-pane" v-if="showPane">
-    <div class="input-container">
-      <el-input placeholder="關鍵字" v-model="label" />
-      <el-input
-        type="number"
-        min="0"
-        placeholder="字詞權重"
-        v-model="closeness"
-      />
-    </div>
-
-    <div class="add-node-btn" @click="handleAddNode">Add Node</div>
-  </div>
+<div class="input-pane" v-if="showPane">
+    <vs-card actionable  class="bg-gray-600">
+      <div slot="header">
+        <h3 class="text-gray-400">
+          New Node
+        </h3>
+      </div>
+      <vs-input placeholder="關鍵字"  v-model="label" />
+      <div slot="footer">
+        <vs-row vs-justify="flex-end">
+          <vs-button color="success" type="gradient" @click="handleAddNode">Add</vs-button>
+        </vs-row>
+      </div>
+    </vs-card>
+</div>
 </template>
 
 <script>
@@ -23,7 +25,7 @@ export default {
   name: 'InputPane',
   data: () => ({
     label: '',
-    closeness: '',
+    closeness: 0,
   }),
   computed: {
     ...mapState('network', ['nodes', 'selectedNode']),
@@ -42,35 +44,44 @@ export default {
   methods: {
     handleAddNode() {
       if (!this.label.trim()) return this.$message.warning('請輸入關鍵字')
-      if (!this.closeness.trim()) return this.$message.warning('請輸入字詞權重')
 
       if (this.checkRepeatNode()) return this.$message.warning('節點已存在')
 
       this.addNode()
       this.addLink()
 
+      
+      this.$vs.notify({
+        icon: 'check',
+         title:'Add Node',
+         text:`Success add new node - ${this.label.trim()}`,
+         color:'success',
+         position:'top-center',
+      })
+
       this.label = ''
-      this.closeness = ''
+      this.closeness = 0
     },
 
     addNode() {
-      const node = new NetNode(
-        `${this.activatedLayer}-${this.label.trim()}`,
-        this.label.trim(),
-        Number(this.closeness),
-        this.activatedLayer
-      )
+      const node = new NetNode({
+        id: `${this.activatedLayer}-${this.label.trim()}`,
+        label: this.label.trim(),
+        closeness: Number(this.closeness),
+        layer: this.activatedLayer
+      })
       this.$store.commit('network/ADD_NODES', node)
     },
 
     addLink() {
       if (!this.selectedNode || this.activatedLayer === 1) return
-      const link = new NetLink(
-        `${this.activatedLayer}-${this.label.trim()}`,
-        this.selectedNode.id,
-        ''
-      )
+      const link = new NetLink({
+        source: `${this.activatedLayer}-${this.label.trim()}`,
+        target: this.selectedNode.id,
+        label: '',
+      })
       this.$store.commit('network/ADD_LINKS', link)
+       
     },
 
     checkRepeatNode() {
@@ -87,8 +98,7 @@ export default {
 
 <style scoped lang="postcss">
 .input-pane {
-  @apply bg-gray-500 p-5 m-5 rounded-md;
-  @apply flex justify-center items-center;
+@apply p-[20px] grid place-content-end;
 }
 
 .input-container {

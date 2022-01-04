@@ -1,7 +1,10 @@
 <template>
   <section class="layer-settings">
-    <vs-select label="filter" v-model="order">
+    <vs-select class="test" label="filter" v-model="order">
       <vs-select-item  :key="item" :value="item.value" :text="item" v-for="item in options"  />
+    </vs-select>
+    <vs-select class="test" label="filter" v-model="net">
+      <vs-select-item  :key="item" :value="item.value" :text="item" v-for="item in netData"  />
     </vs-select>
   </section>
 </template>
@@ -11,11 +14,22 @@ export default {
   name: 'LayerSettings',
   data: () => ({
     order: '',
-    options: ['最相關', '隨機']
+    net: '',
+    options: ['最相關', '隨機'],
+    netData: ['conceptNet', 'wtf'],
   })
 }
 </script>
 
-<style>
-
+<style scoped lang="postcss">
+::v-deep .input-select {
+    @apply !text-gray-700 font-medium;
+  }
+.test {
+  @apply text-left w-full;
+  
+}
+::v-deep .vs-select--label {
+  @apply text-white text-left;
+}
 </style>

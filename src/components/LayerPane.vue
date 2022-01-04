@@ -1,52 +1,44 @@
 <template>
   <div class="layer-pane">
-    <LayerSettings />
-    <section class="overflow-y-auto flex-1 flex flex-col gap-3">
-      <div
-        class="flex items-center justify-between gap-5"
-        v-for="layer in totalLayer"
-        :key="layer"
-      >
-        <vs-button
-        class="w-full"
-        color="#6EE7B7" type="filled"
-          :class="{ 'de-avtivated': activatedLayer !== layer }"
-          @click="selectLayer(layer)"
-        >
-          Layer {{ layer }}
-        </vs-button>
-        <vs-button @click="deleteLayer(layer)" color="danger" type="filled" icon="delete" />
-      </div>
+    <vs-tabs>
+      <vs-tab label="Layers">
+        <section class="overflow-y-auto flex-1 flex flex-col gap-3 pt-[20px]">
+          <div class="flex items-center justify-between gap-5" v-for="layer in totalLayer" :key="layer">
+            <vs-button class="w-full" color="#6EE7B7" type="filled"
+              :class="{ 'de-avtivated': activatedLayer !== layer }" @click="selectLayer(layer)">
+              Layer {{ layer }}
+            </vs-button>
+            <vs-button @click="deleteLayer(layer)" color="danger" type="filled" icon="delete" />
+          </div>
 
-      <vs-button class="w-full mt-[20px] " color="primary" type="filled" @click="addLayer">
-        + Layer {{ totalLayer + 1 }}
-      </vs-button>
-    </section>
+          <vs-button class="w-full my-[20px] " color="primary" type="filled" @click="addLayer">
+            + Layer {{ totalLayer + 1 }}
+          </vs-button>
+        </section>
+        
+      </vs-tab>
 
-    <section>
-      <div class="primary-btn func-btn" @click="importNodes">Import Nodes</div>
-      <input
-        class="hidden"
-        @input="importCSV"
-        ref="nodeImport"
-        type="file"
-        name=""
-        id="import"
-      />
+      <vs-tab label="Settings">
+        <LayerSettings  class=" pt-[20px]" />
+      </vs-tab>
 
-      <div class="primary-btn func-btn disabled" v-if="!nodes.length">
-        Export
-      </div>
-      <download-csv :data="nodes" v-if="nodes.length">
-        <div class="primary-btn func-btn" id="export-btn">Export</div>
-      </download-csv>
-    </section>
+      <vs-tab label="Import/Export">
+        <section class="grid gap-[10px] pt-[20px]">
+          <vs-button class="w-full" color="primary" @click="importNodes">Import Nodes</vs-button>
+          <input class="hidden" @input="importCSV" ref="nodeImport" type="file" name="" id="import" />
 
-    <ImportWarningModalVue
-      v-if="showImportWarningModal"
-      @close="showImportWarningModal = false"
-      @confirm="$refs['nodeImport'].click()"
-    />
+          <vs-button class="w-full" disabled v-if="!nodes.length">
+            Export
+          </vs-button>
+          <download-csv :data="nodes" v-if="nodes.length">
+            <vs-button class="primary-btn func-btn" id="export-btn">Export</vs-button>
+          </download-csv>
+        </section>
+      </vs-tab>
+    </vs-tabs>
+
+    <ImportWarningModalVue v-if="showImportWarningModal" @close="showImportWarningModal = false"
+      @confirm="$refs['nodeImport'].click()" />
   </div>
 </template>
 
@@ -108,21 +100,21 @@ export default {
     },
 
     addNode(label) {
-      const node = new NetNode(
-        `${this.nextLayer}-${label}`,
+      const node = new NetNode({
+        id: `${this.nextLayer}-${label}`,
         label,
-        0,
-        this.nextLayer
-      )
+        closeness: 0,
+        layer: this.nextLayer
+      })
       this.$store.commit('network/ADD_NODES', node)
     },
 
     addLink(node, label) {
-      const link = new NetLink(
-        `${this.nextLayer}-${label}`,
-        node.id,
-        ''
-      )
+      const link = new NetLink({
+        source: `${this.nextLayer}-${label}`,
+        target: node.id,
+        label: ''
+      })
       this.$store.commit('network/ADD_LINKS', link)
     },
 
@@ -134,12 +126,12 @@ export default {
       console.log(data)
       const list = []
       forEach(data, (item) => {
-        const node = new NetNode(
-          `1-${item.Label}`,
-          item.Label,
-          Number(this.closeness) || 0,
-          1
-        )
+        const node = new NetNode({
+          id: `1-${item.Label}`,
+          label: item.Label,
+          closeness: Number(this.closeness) || 0,
+          layer: 1
+        })
         list.push(node)
       })
 
@@ -198,7 +190,7 @@ export default {
 <style scoped lang="postcss">
 .layer-pane {
   @apply flex flex-col justify-between gap-2  bg-[#2B303B] text-gray-400;
-  @apply p-5 h-full w-full;
+  @apply p-5 h-full w-full min-w-[300px];
 }
 .layer-btn {
   @apply w-full text-gray-700;

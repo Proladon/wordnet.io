@@ -5,7 +5,7 @@
         <LayerPane />
       </pane>
       <pane :key="1" size="60">
-        <div class="relative">
+        <div class="relative ">
           <network
             :nodeList="nodes"
             :linkList="links"
@@ -75,6 +75,6 @@ export default {
 
 <style scoped lang="postcss">
 .home {
-  @apply flex w-full h-full;
+  @apply flex w-full h-full ;
 }
 </style>

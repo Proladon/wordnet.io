@@ -48,7 +48,7 @@
           <g v-for="node in nodes" :key="node.index">
             <circle
               :fill="nodeColor(node[nodeTypeKey])"
-              :stroke-width="highlightNodes.indexOf(node.id) == -1 ? 3 : 10"
+              :stroke-width="highlightNodes.indexOf(node.id) == -1 ? 1.5 : 10"
               :stroke="
                 highlightNodes.indexOf(node.id) == -1
                   ? theme.nodeStroke
@@ -132,7 +132,7 @@ export default {
     // link
     linkWidth: {
       type: Number,
-      default: 2,
+      default: 1.5,
     },
     showLinkText: {
       type: Boolean,
@@ -220,10 +220,10 @@ export default {
     theme() {
       if (this.svgTheme === 'light') {
         return {
-          bgcolor: 'white',
+          bgcolor: '#353f52',
           nodeStroke: 'white',
           linkStroke: 'lightgray',
-          textFill: 'black',
+          textFill: 'lightgray',
         }
       } else {
         // dark
@@ -502,6 +502,7 @@ export default {
 <style scoped>
 svg {
   /* border-radius: 5px; */
+  background-color: darkblue;
 }
 
 .element {
@@ -509,7 +510,7 @@ svg {
 }
 .selected {
   opacity: 1 !important;
-  stroke: rgb(132, 251, 85);
+  stroke: rgb(110, 231, 183);
   stroke-width: 2px;
 }
 .node,
