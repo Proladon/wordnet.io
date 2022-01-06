@@ -1,17 +1,18 @@
 <template>
-  <el-dialog
-    title="Warning"
-    :visible.sync="show"
-    @close="$emit('close')"
-    width="30%"
-  >
-    <p class="warning">將會遺失當前工作階段，是否繼續?</p>
+  <vs-prompt
+      title="Warning"
+      color="danger"
+      @cancel="close"
+      @accept="confirm"
+      @close="close"
+      :active.sync="show">
+       <div class="con-exemple-prompt">
 
-    <div slot="footer">
-      <vs-button color="danger" type="filled" @click="confirm">Confirm</vs-button>
-      <vs-button color="primary" type="filled" @click="$emit('close')">Cancel</vs-button>
-    </div>
-  </el-dialog>
+         <vs-alert  color="danger" icon="new_releases" >
+          將會遺失當前工作階段，是否繼續?
+         </vs-alert>
+       </div>
+     </vs-prompt>
 </template>
 
 <script>
@@ -25,6 +26,12 @@ export default {
       this.$emit('confirm')
       this.$emit('close')
     },
+    close() {
+      this.show = false
+      setTimeout(() => {
+        this.$emit('close')
+      }, 300);
+    }
   },
 }
 </script>

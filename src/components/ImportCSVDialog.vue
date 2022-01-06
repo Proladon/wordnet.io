@@ -1,5 +1,5 @@
 <template>
-  <el-dialog
+  <!-- <el-dialog
     title="Import Data"
     :visible.sync="show"
     @close="$emit('close')"
@@ -34,7 +34,19 @@
       name=""
       id="import"
     />
-  </el-dialog>
+  </el-dialog> -->
+
+  <vs-prompt
+      color="danger"
+      @cancel="valMultipe.value1='',valMultipe.value2=''"
+      @accept="acceptAlert"
+      @close="close"
+      :active.sync="activePrompt2">
+       <div class="con-exemple-prompt">
+       Enter your first and last name to <b>continue</b>.
+
+       </div>
+     </vs-prompt>
 </template>
 
 <script>

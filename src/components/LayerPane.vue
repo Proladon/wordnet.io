@@ -31,7 +31,7 @@
             Export
           </vs-button>
           <download-csv :data="nodes" v-if="nodes.length">
-            <vs-button class="primary-btn func-btn" id="export-btn">Export</vs-button>
+            <vs-button class="w-full" id="export-btn">Export</vs-button>
           </download-csv>
         </section>
       </vs-tab>
@@ -81,37 +81,53 @@ export default {
       if(!this.nodes.length) return
       
       for(const node of clone(this.nodes)) {
+        if(node.layer !== this.activatedLayer - 1) continue
         const [res] = await api({
           method: 'get',
           url: `/en/${node.label}`
         })
         const relations = res.edges
-        console.log(relations)
 
-        relations.forEach(relate => {
+       
+        // TODO 根據設定過濾: 權重? 數量?
+        relations.sort((a, b) => {
+          if( a.weight > b.weight) return -1
+          if( a.weight < b.weight) return 1
+        })
+
+        if(! relations.length) continue
+        const times = relations.length >= 5 ? 5 : relations.length
+        let count = 1
+        const list = []
+        for(const relate of relations) {
+          if(count > times) break
           const start = relate.start.label
           const end = relate.end.label
           const label = node.label === start ? end : start
-
-          this.addNode(label)
-          this.addLink(node, label)
-        })
+          
+          if(! list.includes(label)) {
+            this.addNode(label)
+            this.addLink(node, label)
+            count += 1
+            list.push(label)
+          }
+        }
       }
     },
 
     addNode(label) {
       const node = new NetNode({
-        id: `${this.nextLayer}-${label}`,
+        id: `${this.activatedLayer}-${label}`,
         label,
         closeness: 0,
-        layer: this.nextLayer
+        layer: this.activatedLayer
       })
       this.$store.commit('network/ADD_NODES', node)
     },
 
     addLink(node, label) {
       const link = new NetLink({
-        source: `${this.nextLayer}-${label}`,
+        source: `${this.activatedLayer}-${label}`,
         target: node.id,
         label: ''
       })
@@ -123,7 +139,6 @@ export default {
     },
 
     parseCSVData(data) {
-      console.log(data)
       const list = []
       forEach(data, (item) => {
         const node = new NetNode({
@@ -134,17 +149,20 @@ export default {
         })
         list.push(node)
       })
-
-      this.$store.commit('network/SET_NODES', list)
-      this.$message.success('Import nodes success')
+      return list
     },
 
     importCSV(e) {
+      this.$store.commit('network/SET_NODES', [])
+      this.$store.commit('network/SET_LINKS', [])
+
       let file = e.target.files[0]
       let reader = new FileReader()
       reader.onload = () => {
         const csvArray = csv2json(reader.result, { parseNumbers: true })
-        this.parseCSVData(csvArray)
+        const newNodes = this.parseCSVData(csvArray)
+        this.$store.commit('network/SET_NODES', newNodes)
+        this.$message.success('Import nodes success')
       }
       reader.readAsText(file)
     },
@@ -180,8 +198,8 @@ export default {
     },
 
     importNodes() {
-      this.showImportWarningModal = true
-      // this.$refs['nodeImport'].click()
+      if(this.nodes.length) this.showImportWarningModal = true
+      if(! this.nodes.length) this.$refs['nodeImport'].click()
     },
   },
 }
