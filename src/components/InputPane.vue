@@ -1,26 +1,33 @@
 <template>
-    <vs-card class="input-pane" :class="{'start-position': !nodes.length}" actionable v-if="showPane" >
-      <div slot="header">
-        <h3 class="text-gray-400">
-          Add Node
-        </h3>
-      </div>
-      
-      <div v-if="!nodes.length">
-        <vs-button class="w-full" type="gradient" @click="importNodes">Import</vs-button>
-        <input class="hidden" @input="importCSV" ref="nodeImport" type="file" name="" id="import" />
-        <div class="my-[20px] text-gray-400">
-          OR
-        </div>
-      </div>
+  <vs-card v-if="showPane" class="input-pane" :class="{'start-position': !nodes.length}" actionable>
+    <div slot="header">
+      <h3 class="text-gray-400">
+        Add Node
+      </h3>
+    </div>
 
-      <vs-input class="w-full"  placeholder="Enter Node Name" @keyup.enter="handleAddNode"  v-model="label" />
-      <div slot="footer">
-        <vs-row vs-justify="flex-end">
-          <vs-button class="w-[100px]" color="success" type="gradient" @click="handleAddNode">Add</vs-button>
-        </vs-row>
+    <div v-if="!nodes.length">
+      <vs-button class="w-full" type="gradient" @click="importNodes">Import</vs-button>
+      <input
+        id="import"
+        ref="nodeImport"
+        class="hidden"
+        type="file"
+        name=""
+        @input="importCSV"
+      >
+      <div class="my-[20px] text-gray-400">
+        OR
       </div>
-    </vs-card>
+    </div>
+
+    <vs-input v-model="label" class="w-full" placeholder="Enter Node Name" @keyup.enter="handleAddNode" />
+    <div slot="footer">
+      <vs-row vs-justify="flex-end">
+        <vs-button class="w-[100px]" color="success" type="gradient" @click="handleAddNode">Add</vs-button>
+      </vs-row>
+    </div>
+  </vs-card>
 </template>
 
 <script>
@@ -39,7 +46,7 @@ export default {
   computed: {
     ...mapState('network', ['nodes', 'selectedNode']),
     ...mapState('layer', ['activatedLayer']),
-    showPane() {
+    showPane () {
       let show = false
       if (this.activatedLayer === 1) show = true
       else if (this.activatedLayer > 1 && this.selectedNode) show = true
@@ -51,44 +58,53 @@ export default {
     },
   },
   methods: {
-    handleAddNode() {
-      if (!this.label.trim()) return this.$vs.notify({
+    handleAddNode () {
+      if (!this.label.trim()) {
+        return this.$vs.notify({
           icon: 'warning',
-         title:'Notice',
-         text:`Please enter node name`,
-         color:'warning',
-         position:'top-center',
-      })
+          title: 'Notice',
+          text: 'Please enter node name',
+          color: 'warning',
+          position: 'top-center',
+        })
+      }
 
-      if (this.checkRepeatNode()) return this.$message.warning('節點已存在')
+      if (this.checkRepeatNode()) {
+        return this.$vs.notify({
+          icon: 'warning',
+          title: 'Notice',
+          text: 'Node already existing',
+          color: 'warning',
+          position: 'top-center',
+        })
+      }
 
       this.addNode()
       this.addLink()
 
-      
       this.$vs.notify({
         icon: 'check',
-         title:'New Node',
-         text:this.label.trim(),
-         color:'success',
-         position:'top-center',
+        title: 'New Node',
+        text: this.label.trim(),
+        color: 'success',
+        position: 'top-center',
       })
 
       this.label = ''
       this.closeness = 0
     },
 
-    addNode() {
+    addNode () {
       const node = new NetNode({
         id: `${this.activatedLayer}-${this.label.trim()}`,
         label: this.label.trim(),
         closeness: Number(this.closeness),
-        layer: this.activatedLayer
+        layer: this.activatedLayer,
       })
       this.$store.commit('network/ADD_NODES', node)
     },
 
-    addLink() {
+    addLink () {
       if (!this.selectedNode || this.activatedLayer === 1) return
       const link = new NetLink({
         source: `${this.activatedLayer}-${this.label.trim()}`,
@@ -96,15 +112,14 @@ export default {
         label: '',
       })
       this.$store.commit('network/ADD_LINKS', link)
-       
     },
-    
-    checkRepeatNode() {
+
+    checkRepeatNode () {
       return Boolean(
         find(this.nodes, {
           id: `${this.activatedLayer}-${this.label.trim()}`,
           layer: this.activatedLayer,
-        })
+        }),
       )
     },
   },
@@ -133,5 +148,16 @@ export default {
 
 ::v-deep .vs-inputx{
   @apply !text-center;
+}
+
+::v-deep .vs-con-input{
+  @apply items-center justify-center;
+  input {
+    @apply h-[40px] ;
+
+  }
+  span {
+    top: unset !important;
+  }
 }
 </style>

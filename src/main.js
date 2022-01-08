@@ -4,11 +4,16 @@ import store from '@/store'
 import Notifications from 'vue-notification'
 import velocity from 'velocity-animate'
 import JsonCSV from 'vue-json-csv'
+
+// Element
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+
+// Vuesax
 import Vuesax from 'vuesax'
 import 'vuesax/dist/vuesax.css'
 import 'material-icons/iconfont/material-icons.css';
+
 import 'windi.css'
 import '@/styles/index.css'
 

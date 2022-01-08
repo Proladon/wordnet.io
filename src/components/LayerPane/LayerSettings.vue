@@ -1,19 +1,19 @@
 <template>
   <section class="layer-settings">
-    <vs-select class="test" label="Generate" v-model="generate">
+    <vs-select v-model="generate" class="test" label="Generate">
       <vs-select-item
+        v-for="(item, index) in options"
         :key="index"
         :value="item.text"
         :text="item.text"
-        v-for="(item, index) in options"
       />
     </vs-select>
-    <vs-select class="test" label="Source" v-model="source">
+    <vs-select v-model="source" class="test" label="Source">
       <vs-select-item
+        v-for="(item, index) in netData"
         :key="index"
         :value="item.text"
         :text="item.text"
-        v-for="(item, index) in netData"
       />
     </vs-select>
   </section>
@@ -37,7 +37,7 @@ export default {
   computed: {
     ...mapState('layer', ['layerSettings']),
     generate: updateSetting('generate'),
-    source: updateSetting('source')
+    source: updateSetting('source'),
   },
 }
 </script>
@@ -52,4 +52,5 @@ export default {
 ::v-deep .vs-select--label {
   @apply text-white text-left;
 }
+
 </style>

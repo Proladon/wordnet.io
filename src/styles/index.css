@@ -1,17 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap');
 
 * {
-  @apply !outline-none;
+  @apply !outline-none ;
 }
-
 
 .el-loading-mask {
   background-color: rgba(10, 10, 10, 0.5)
 }
 .el-loading-spinner {
   @apply flex justify-center;
+  
+}
+
+.vs-button-text {
+  @apply text-shadow-lg;
+}
+
+.el-loading-spinner circle {
+    @apply !stroke-emerald-300;
 }
 
 :root {
   --vs-primary: 80,196,232;
+  /* --vs-danger: 240, 79, 112; */
+  --vs-danger: 222, 109, 131;
 }

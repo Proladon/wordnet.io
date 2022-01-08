@@ -1,5 +1,5 @@
 class NetLink {
-  constructor({source, target, label, weight}) {
+  constructor ({ source, target, label, weight }) {
     this.source = source
     this.target = target
     this.label = label

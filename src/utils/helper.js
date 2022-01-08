@@ -1,9 +1,9 @@
 export const updateSetting = function (key) {
   return {
-    get() {
+    get () {
       return this.layerSettings[key]
     },
-    set(value) {
+    set (value) {
       this.$store.commit('layer/SET_LAYER_SETTINGS', { key, value })
     },
   }

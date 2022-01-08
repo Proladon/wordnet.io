@@ -3,13 +3,12 @@
     id="network"
     :style="{ width: svgSize.width + 'px', height: svgSize.height + 'px' }"
   >
-      
     <div
+      v-show="linkTextVisible"
       class="linkText"
       :style="linkTextPosition"
-      v-show="linkTextVisible"
       v-text="linkTextContent"
-    ></div>
+    />
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -29,7 +28,7 @@
               :class="`${link[linkTypeKey]} ${link.selected} link element`"
               :stroke="theme.linkStroke"
               :stroke-width="linkWidth"
-            ></line>
+            />
             <!-- dx dy 文字左下角坐标 -->
             <text
               v-if="showLinkText"
@@ -59,38 +58,31 @@
                 node.showText ? 'selected' : ''
               } node element`"
               :r="nodeSize"
-            ></circle>
+            />
 
             <!-- 節點按鈕 -->
-            <!-- <rect
+            <foreignObject
               v-show="pinned.includes(node.index)"
-              @click="$emit('deleteNode', node)"
-              class="rect"
-              rx="15"
-              ry="15"
-              width="10"
-              height="10"
-              style="fill: red; stroke: black; stroke-width: 1"
-            >asds</rect> -->
-            <foreignObject xmlns="http://www.w3.org/2000/svg"
-            v-show="pinned.includes(node.index)"
-              class="rect"
+              xmlns="http://www.w3.org/2000/svg"
+              class="rect flex"
               width="15"
-              height="15" >
-            <vs-button class="!w-[15px] !h-[15px] text-[12px] !p-0 !m-0">X</vs-button>
+              height="15"
+            >
+              <vs-button class="delete-btn" color="danger" @click="$emit('deleteNode', node)">X</vs-button>
             </foreignObject>
             <!-- 下方text v-show="node.showText" -->
             <text
               :dx="nodeSize + 5"
               dy="0"
               class="node-text"
+              :class="{'focus-text': pinned.includes(node.index)}"
               :fill="theme.textFill"
               :font-size="nodeTextFontSize"
             >
               {{ node[nodeTextKey] }}
             </text>
           </g>
-          <g></g>
+          <g />
         </g>
       </g>
     </svg>
@@ -188,7 +180,7 @@ export default {
       },
     },
   },
-  data() {
+  data () {
     return {
       selection: {
         links: [],
@@ -208,10 +200,10 @@ export default {
   },
   computed: {
     ...mapState('layer', ['activatedLayer']),
-    nodes() {
+    nodes () {
       // 節點去重
       let nodes = this.nodeList.slice()
-      let nodeIds = []
+      const nodeIds = []
       nodes = nodes.filter((node) => {
         if (nodeIds.indexOf(node.id) === -1) {
           nodeIds.push(node.id)
@@ -222,10 +214,10 @@ export default {
       })
       return nodes
     },
-    links() {
+    links () {
       return this.linkList
     },
-    theme() {
+    theme () {
       if (this.svgTheme === 'light') {
         return {
           bgcolor: '#353f52',
@@ -245,8 +237,8 @@ export default {
     },
   },
   watch: {
-    activatedLayer() {
-      d3.selectAll(`circle`).attr('r', 10)
+    activatedLayer () {
+      d3.selectAll('circle').attr('r', 10)
       d3.selectAll(`.layer-${this.activatedLayer}`).attr('r', 15)
     },
     bodyStrength: function () {
@@ -277,14 +269,14 @@ export default {
       })
     },
   },
-  created() {
+  created () {
     this.initData()
   },
-  mounted() {
+  mounted () {
     this.initDragTickZoom()
   },
   methods: {
-    initData() {
+    initData () {
       this.force = d3
         .forceSimulation(this.nodes)
         .force(
@@ -292,18 +284,18 @@ export default {
           d3
             .forceLink(this.links)
             .id((d) => d.id)
-            .distance(this.linkDistance)
+            .distance(this.linkDistance),
         )
-        .force('charge', d3.forceManyBody().strength(this.bodyStrength)) //The strength of the attraction or repulsion
+        .force('charge', d3.forceManyBody().strength(this.bodyStrength)) // The strength of the attraction or repulsion
         .force(
           'center',
-          d3.forceCenter(this.svgSize.width / 2, this.svgSize.height / 2)
+          d3.forceCenter(this.svgSize.width / 2, this.svgSize.height / 2),
         )
 
       // console.log(this.nodes);
       // console.log(this.links);
     },
-    initDragTickZoom() {
+    initDragTickZoom () {
       // 給節點添加拖拽
       d3.selectAll('.node').call(this.drag(this.force))
       this.force.on('tick', () => {
@@ -341,10 +333,10 @@ export default {
 
       d3.select('svg').call(this.zoom).on('dblclick.zoom', null)
     },
-    clickLink(e) {
+    clickLink (e) {
       this.$emit('clickLink', e, e.target.__data__)
     },
-    clickNode(e) {
+    clickNode (e) {
       let focus = false
       if (this.pinned.length === 0) {
         // 如果都還沒有被點選的
@@ -359,14 +351,14 @@ export default {
       this.$emit('clickNode', e, e.target.__data__)
       if (!focus) this.$emit('deFocus')
     },
-    clickEle(e) {
+    clickEle (e) {
       if (e.target.tagName === 'circle') {
         this.clickNode(e)
       } else if (e.target.tagName === 'line') {
         this.clickLink(e)
       }
     },
-    svgMouseover(e) {
+    svgMouseover (e) {
       if (e.target.nodeName === 'circle') {
         if (this.pinned.length === 0) {
           this.selectedState(e)
@@ -385,7 +377,7 @@ export default {
         this.$emit('hoverLink', e, e.target.__data__)
       }
     },
-    svgMouseout(e) {
+    svgMouseout (e) {
       this.linkTextVisible = false
       if (e.target.nodeName === 'circle') {
         if (this.pinned.length === 0) {
@@ -395,7 +387,7 @@ export default {
         this.$forceUpdate()
       }
     },
-    selectedState(e) {
+    selectedState (e) {
       // 節點自身顯示文字、增加 selected class、添加進 selection
       e.target.__data__.showText = true
       e.target.classList.add('selected')
@@ -406,7 +398,7 @@ export default {
       // 除了 selected 的其餘節點透明度減小
       d3.selectAll('.element').style('opacity', 0.2) // hover
     },
-    noSelectedState(e) {
+    noSelectedState (e) {
       // 節點自身不顯示文字、移除 selected class
       e.target.__data__.showText = false
       // e.target.classList.remove("selected");
@@ -415,11 +407,11 @@ export default {
       // 所有節點透明度恢復
       d3.selectAll('.element').style('opacity', 1)
     },
-    pinnedState(e) {
+    pinnedState (e) {
       this.pinned.push(e.target.__data__.index)
       d3.selectAll('.element').style('opacity', 0.05) // click
     },
-    lightNeibor(node) {
+    lightNeibor (node) {
       this.links.forEach((link) => {
         if (link.source.index === node.index) {
           link.selected = 'selected'
@@ -437,14 +429,14 @@ export default {
         }
       })
     },
-    lightNode(selectedNode) {
+    lightNode (selectedNode) {
       this.nodes.forEach((node) => {
         if (node.index === selectedNode.index) {
           node.showText = true
         }
       })
     },
-    darkenNerbor() {
+    darkenNerbor () {
       this.links.forEach((link) => {
         this.selection.links.forEach((selectedLink) => {
           if (selectedLink.id === link.id) {
@@ -464,7 +456,7 @@ export default {
       this.$store.commit('network/SET_REF_NODES', [])
       this.selection.links = []
     },
-    zoomed() {
+    zoomed () {
       // 縮放中：以鼠標所在的位置為中心
       d3.select('#container').attr(
         'transform',
@@ -474,23 +466,23 @@ export default {
           d3.event.transform.y +
           ') scale(' +
           d3.event.transform.k +
-          ')'
+          ')',
       )
     },
-    drag(simulation) {
-      function dragstarted(d) {
+    drag (simulation) {
+      function dragstarted (d) {
         if (!d3.event.active) simulation.alphaTarget(0.3).restart()
         // if (!d3.event.active) simulation.alpha(0.3).restart()
         d.fx = d.x
         d.fy = d.y
       }
 
-      function dragged(d) {
+      function dragged (d) {
         d.fx = d3.event.x
         d.fy = d3.event.y
       }
 
-      function dragended(d) {
+      function dragended (d) {
         if (!d3.event.active) simulation.alphaTarget(0)
         // if (!d3.event.active) simulation.alpha(0)
         d.fx = null
@@ -507,7 +499,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 svg {
   /* border-radius: 5px; */
   background-color: darkblue;
@@ -523,14 +515,23 @@ svg {
 }
 .node,
 .link {
-  cursor: pointer;
+  @apply cursor-pointer;
 }
 .linkText {
-  position: absolute;
-  z-index: 10;
+  @apply absolute z-10 text-white p-[10px] rounded-[10px];
   background-color: rgba(75, 75, 75, 0.596);
-  border-radius: 10px;
-  color: white;
-  padding: 10px;
+}
+
+.delete-btn {
+  @apply !w-[15px] !h-[15px] text-[12px] !p-0;
+}
+
+.node-text {
+  transition: ease-in-out .3s;
+}
+.focus-text {
+  @apply  text-[18px] z-[99];
+  fill: rgb(255, 229, 79);
+  transition: ease-in-out .3s;
 }
 </style>

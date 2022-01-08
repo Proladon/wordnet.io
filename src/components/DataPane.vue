@@ -20,7 +20,7 @@
       </div>
     </section>
 
-    <hr class="my-4 border-gray-400" />
+    <hr class="my-4 border-gray-400">
 
     <section class="text-left">
       <p class="text-[20px] font-bold mt-[20px] mb-[5px]">Relations Nodes</p>
@@ -40,11 +40,11 @@ export default {
   name: 'DataPane',
   computed: {
     ...mapState('network', ['selectedNode', 'links', 'refNodes']),
-    refNodeFilter() {
+    refNodeFilter () {
       if (!this.selectedNode) return []
       const res = filter(
         this.refNodes,
-        (node) => node.id !== this.selectedNode.id
+        (node) => node.id !== this.selectedNode.id,
       )
 
       return res

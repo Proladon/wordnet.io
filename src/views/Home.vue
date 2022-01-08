@@ -4,7 +4,7 @@
       <pane :key="0" size="20">
         <LayerPane />
       </pane>
-      <pane :key="1" size="60" v-loading="generating">
+      <pane :key="1" v-loading="generating" size="60">
         <div class="relative">
           <network
             :nodeList="nodes"
@@ -18,8 +18,8 @@
             @clickNode="clickNode"
             @deFocus="deFocus"
           />
-          
-          <InputPane  />
+
+          <InputPane />
         </div>
       </pane>
       <pane :key="2" size="20">
@@ -50,12 +50,12 @@ export default {
   },
 
   methods: {
-    deleteNode(node) {
+    deleteNode (node) {
       this.nodes.splice(node.index, 1)
       this.deleteRefLink(node)
     },
 
-    deleteRefLink(node) {
+    deleteRefLink (node) {
       // FIXME 有bug
       const removes = filter(this.links, (link) => {
         return link.source.id === node.id || link.target.id === node.id
@@ -64,11 +64,11 @@ export default {
       this.links = difference(this.links, removes)
     },
 
-    clickNode(e, node) {
+    clickNode (e, node) {
       // this.selectedNode = node
       this.$store.commit('network/SET_SELECTED_NODES', node)
     },
-    deFocus() {
+    deFocus () {
       this.$store.commit('network/SET_SELECTED_NODES', null)
     },
   },

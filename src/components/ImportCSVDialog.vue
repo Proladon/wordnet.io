@@ -37,16 +37,16 @@
   </el-dialog> -->
 
   <vs-prompt
-      color="danger"
-      @cancel="valMultipe.value1='',valMultipe.value2=''"
-      @accept="acceptAlert"
-      @close="close"
-      :active.sync="activePrompt2">
-       <div class="con-exemple-prompt">
-       Enter your first and last name to <b>continue</b>.
-
-       </div>
-     </vs-prompt>
+    color="danger"
+    :active.sync="activePrompt2"
+    @cancel="valMultipe.value1='',valMultipe.value2=''"
+    @accept="acceptAlert"
+    @close="close"
+  >
+    <div class="con-exemple-prompt">
+      Enter your first and last name to <b>continue</b>.
+    </div>
+  </vs-prompt>
 </template>
 
 <script>
@@ -59,7 +59,7 @@ export default {
     show: true,
   }),
   methods: {
-    parseCSVData(data) {
+    parseCSVData (data) {
       console.log(data)
       const list = []
       forEach(data, (item) => {
@@ -67,7 +67,7 @@ export default {
           `1-${item.Label}`,
           item.Label,
           Number(item.closeness),
-          1
+          1,
         )
         list.push(node)
       })
@@ -75,9 +75,9 @@ export default {
       this.$store.commit('network/SET_NODES', list)
     },
 
-    importCSV(e) {
-      let file = e.target.files[0]
-      let reader = new FileReader()
+    importCSV (e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
       reader.onload = () => {
         const csvArray = csv2json(reader.result, { parseNumbers: true })
         this.parseCSVData(csvArray)

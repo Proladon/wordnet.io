@@ -1,18 +1,18 @@
 <template>
   <vs-prompt
-      title="Warning"
-      color="danger"
-      @cancel="close"
-      @accept="confirm"
-      @close="close"
-      :active.sync="show">
-       <div class="con-exemple-prompt">
-
-         <vs-alert  color="danger" icon="new_releases" >
-          將會遺失當前工作階段，是否繼續?
-         </vs-alert>
-       </div>
-     </vs-prompt>
+    title="Warning"
+    color="danger"
+    :active.sync="show"
+    @cancel="close"
+    @accept="confirm"
+    @close="close"
+  >
+    <div class="con-exemple-prompt">
+      <vs-alert color="danger" icon="new_releases">
+        將會遺失當前工作階段，是否繼續?
+      </vs-alert>
+    </div>
+  </vs-prompt>
 </template>
 
 <script>
@@ -22,16 +22,16 @@ export default {
     show: true,
   }),
   methods: {
-    confirm() {
+    confirm () {
       this.$emit('confirm')
       this.$emit('close')
     },
-    close() {
+    close () {
       this.show = false
       setTimeout(() => {
         this.$emit('close')
-      }, 300);
-    }
+      }, 300)
+    },
   },
 }
 </script>
