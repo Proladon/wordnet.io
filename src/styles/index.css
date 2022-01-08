@@ -4,6 +4,26 @@
   @apply !outline-none ;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 .el-loading-mask {
   background-color: rgba(10, 10, 10, 0.5)
 }
@@ -20,6 +40,10 @@
     @apply !stroke-emerald-300;
 }
 
+
+.vs-input {
+  @apply text-gray-700;
+}
 :root {
   --vs-primary: 80,196,232;
   /* --vs-danger: 240, 79, 112; */

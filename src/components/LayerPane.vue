@@ -27,7 +27,7 @@
               color="danger"
               type="filled"
               icon="cached"
-              @click="deleteLayer(layer)"
+              @click="showResetWarningModal = true"
             />
           </div>
 
@@ -75,6 +75,12 @@
       @close="showImportWarningModal = false"
       @confirm="$refs['nodeImport'].click()"
     />
+
+    <ResetWarningModalVue
+      v-if="showResetWarningModal"
+      @close="showResetWarningModal = false"
+      @confirm="resetLayer"
+    />
   </div>
 </template>
 
@@ -83,18 +89,22 @@ import csvMixin from '@/mixin/csv.vue'
 import NetNode from '@/factory/node'
 import NetLink from '@/factory/link'
 import { mapState } from 'vuex'
-import { filter, clone, map } from 'lodash'
+import { filter, clone, map, shuffle } from 'lodash'
 import LayerSettings from '@/components/LayerPane/LayerSettings.vue'
 import ImportWarningModalVue from '@/components/LayerPane/ImportWarningModal.vue'
+import ResetWarningModalVue from '@/components/LayerPane/ResetWarningModal.vue'
 import { api } from '@/utils/axios'
 
 export default {
   name: 'LayerPane',
-  components: { ImportWarningModalVue, LayerSettings },
+  components: { ImportWarningModalVue, ResetWarningModalVue, LayerSettings },
   mixins: [csvMixin],
+  data: () => ({
+    showResetWarningModal: false,
+  }),
   computed: {
     ...mapState('network', ['nodes', 'links']),
-    ...mapState('layer', ['totalLayer', 'activatedLayer', 'generating']),
+    ...mapState('layer', ['totalLayer', 'activatedLayer', 'generating', 'layerSettings']),
     disabledAddLayerBtn () {
       return this.generating || (!this.nodes.length && this.activatedLayer !== 0)
     },
@@ -119,16 +129,19 @@ export default {
       for (const node of curNodes) {
         if (node.layer !== this.activatedLayer) continue
 
-        const relations = await this.searchRelates(node)
+        let relations = await this.searchRelates(node)
 
         // TODO 根據設定過濾: 權重? 數量?
-        relations.sort((a, b) => {
-          if (a.weight > b.weight) return -1
-          if (a.weight < b.weight) return 1
-        })
+        if (this.layerSettings.generate === 'random') relations = shuffle(relations)
+        if (this.layerSettings.generate === 'relate') {
+          relations.sort((a, b) => {
+            if (a.weight > b.weight) return -1
+            if (a.weight < b.weight) return 1
+          })
+        }
 
         if (!relations.length) continue
-        const times = relations.length >= 5 ? 5 : relations.length
+        const times = relations.length >= this.layerSettings.maxRelates ? this.layerSettings.maxRelates : relations.length
         let count = 1
         const list = []
         for (const relate of relations) {
@@ -151,14 +164,17 @@ export default {
       this.$store.commit('layer/SET_GENERATING', false)
     },
 
+    resetLayer () {
+      this.$store.commit('network/SET_NODES', [])
+      this.$store.commit('network/SET_LINKS', [])
+      this.$store.commit('layer/SET_TOTAL_LAYER', 1)
+      this.$store.commit('layer/SET_ACTIVATED_LAYER', 1)
+      this.$store.commit('layer/SET_GENERATING', false)
+    },
+
     // => 刪除Layer
     deleteLayer (layer) {
       this.$store.commit('layer/SET_GENERATING', true)
-      if (layer === 1) {
-        this.$store.commit('network/SET_NODES', [])
-        this.$store.commit('network/SET_LINKS', [])
-        return this.$store.commit('layer/SET_GENERATING', false)
-      }
       const curNodes = clone(this.nodes)
       const curLinks = clone(this.links)
 
@@ -248,9 +264,13 @@ export default {
 </script>
 
 <style scoped lang="postcss">
+::v-deep .con-vs-tabs .con-slot-tabs{
+  /* @apply overflow-y-auto */
+  @apply h-full px-[20px] ;
+}
 .layer-pane {
   @apply flex flex-col justify-between gap-2  bg-[#2B303B] text-gray-400;
-  @apply p-5 h-full w-full min-w-[300px]  ;
+  @apply py-5 h-full w-full min-w-[300px]  ;
 }
 
 .layers-wrapper {

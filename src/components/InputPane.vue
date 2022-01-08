@@ -1,5 +1,5 @@
 <template>
-  <vs-card v-if="showPane" class="input-pane" :class="{'start-position': !nodes.length}" actionable>
+  <vs-card v-if="showPane || activatedLayer === 1" class="input-pane" :class="{'start-position': !nodes.length}" actionable>
     <div slot="header">
       <h3 class="text-gray-400">
         Add Node
@@ -48,9 +48,8 @@ export default {
     ...mapState('layer', ['activatedLayer']),
     showPane () {
       let show = false
-      if (this.activatedLayer === 1) show = true
-      else if (this.activatedLayer > 1 && this.selectedNode) show = true
-      else if (this.selectedNode) {
+      if (this.activatedLayer > 1 && this.selectedNode) show = true
+      if (this.selectedNode) {
         if (this.activatedLayer === this.selectedNode.layer) show = false
         if (this.activatedLayer !== this.selectedNode.layer + 1) show = false
       }

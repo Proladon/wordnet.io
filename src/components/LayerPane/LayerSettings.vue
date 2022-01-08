@@ -1,21 +1,26 @@
 <template>
   <section class="layer-settings">
-    <vs-select v-model="generate" class="test" label="Generate">
-      <vs-select-item
-        v-for="(item, index) in options"
-        :key="index"
-        :value="item.text"
-        :text="item.text"
-      />
-    </vs-select>
-    <vs-select v-model="source" class="test" label="Source">
-      <vs-select-item
-        v-for="(item, index) in netData"
-        :key="index"
-        :value="item.text"
-        :text="item.text"
-      />
-    </vs-select>
+    <div class="grid gap-[10px]">
+      <p class="font-medium">Generate Layer</p>
+      <vs-select v-model="generate" class="test" label="Filter">
+        <vs-select-item
+          v-for="(item, index) in options"
+          :key="index"
+          :value="item.value"
+          :text="item.text"
+        />
+      </vs-select>
+      <vs-input v-model="maxRelates" label="Max relates" class="test" />
+
+      <vs-select v-model="source" class="test" label="Source">
+        <vs-select-item
+          v-for="(item, index) in netData"
+          :key="index"
+          :value="item.text"
+          :text="item.text"
+        />
+      </vs-select>
+    </div>
   </section>
 </template>
 
@@ -29,8 +34,8 @@ export default {
     order: '',
     net: '',
     options: [
-      { text: '最相關' },
-      { text: '隨機' },
+      { text: 'Most relevant', value: 'relate' },
+      { text: 'Random', value: 'random' },
     ],
     netData: [{ text: 'conceptNet' }],
   }),
@@ -38,19 +43,27 @@ export default {
     ...mapState('layer', ['layerSettings']),
     generate: updateSetting('generate'),
     source: updateSetting('source'),
+    maxRelates: updateSetting('maxRelates'),
   },
 }
 </script>
 
+<style lang="postcss">
+label {
+  @apply !text-gray-400;
+}
+</style>
+
 <style scoped lang="postcss">
+
+.layer-settings{
+  @apply overflow-y-auto pb-[30px] overflow-x-hidden;
+}
 ::v-deep .input-select {
   @apply !text-gray-700 font-medium;
 }
 .test {
   @apply text-left w-full;
-}
-::v-deep .vs-select--label {
-  @apply text-white text-left;
 }
 
 </style>

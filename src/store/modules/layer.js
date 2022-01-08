@@ -5,9 +5,10 @@ const layer = {
     totalLayer: 1,
     activatedLayer: 1,
     layerSettings: {
-      generate: '最相關',
-      source: 'conceptNet'
-    }
+      generate: 'relate',
+      source: 'conceptNet',
+      maxRelates: 5,
+    },
   },
   mutations: {
     SET_GENERATING: (state, status) => {
@@ -19,9 +20,9 @@ const layer = {
     SET_TOTAL_LAYER: (state, layer) => {
       state.totalLayer = layer
     },
-    SET_LAYER_SETTINGS: (state, {key, value}) => {
+    SET_LAYER_SETTINGS: (state, { key, value }) => {
       state.layerSettings[key] = value
-    }
+    },
   },
 }
 
