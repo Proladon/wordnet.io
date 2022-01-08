@@ -3,6 +3,7 @@
     id="network"
     :style="{ width: svgSize.width + 'px', height: svgSize.height + 'px' }"
   >
+      
     <div
       class="linkText"
       :style="linkTextPosition"

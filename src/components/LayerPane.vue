@@ -2,16 +2,17 @@
   <div class="layer-pane">
     <vs-tabs>
       <vs-tab label="Layers">
-        <section class="overflow-y-auto flex-1 flex flex-col gap-3 pt-[20px]">
-          <div class="flex items-center justify-between gap-5" v-for="layer in totalLayer" :key="layer">
+        <section class="layers-wrapper">
+          <div class="layers-list" v-for="layer in totalLayer" :key="layer">
             <vs-button class="w-full" color="#6EE7B7" type="filled"
               :class="{ 'de-avtivated': activatedLayer !== layer }" @click="selectLayer(layer)">
               Layer {{ layer }}
             </vs-button>
-            <vs-button @click="deleteLayer(layer)" color="danger" type="filled" icon="delete" />
+            <vs-button v-if="layer > 1" @click="deleteLayer(layer)" color="danger" type="filled" icon="delete" />
+            <vs-button v-if="layer === 1 && nodes.length" @click="deleteLayer(layer)" color="danger" type="filled" icon="cached" />
           </div>
 
-          <vs-button class="w-full my-[20px] " color="primary" type="filled" @click="addLayer">
+          <vs-button v-loading="generating" :disabled="disabledAddLayerBtn"  class="w-full my-[20px] " color="primary" type="filled" @click="addLayer">
             + Layer {{ totalLayer + 1 }}
           </vs-button>
         </section>
@@ -57,7 +58,10 @@ export default {
   components: { ImportWarningModalVue, LayerSettings },
   computed: {
     ...mapState('network', ['nodes', 'links']),
-    ...mapState('layer', ['totalLayer', 'activatedLayer']),
+    ...mapState('layer', ['totalLayer', 'activatedLayer', 'generating']),
+    disabledAddLayerBtn() {
+      return this.generating || (! this.nodes.length && this.activatedLayer !== 0)
+    },
     preLayer() {
       if (this.activatedLayer === 0) return 0
       return this.activatedLayer - 1
@@ -72,21 +76,17 @@ export default {
 
   methods: {
     async addLayer() {
-      this.$store.commit('layer/SET_TOTAL_LAYER', this.totalLayer + 1)
-      this.$store.commit('layer/SET_ACTIVATED_LAYER', this.totalLayer)
-      await this.searchRelates()
-    },
+      if(! this.isAPILayer()) return
 
-    async searchRelates() {
-      if(!this.nodes.length) return
-      
-      for(const node of clone(this.nodes)) {
-        if(node.layer !== this.activatedLayer - 1) continue
-        const [res] = await api({
-          method: 'get',
-          url: `/en/${node.label}`
-        })
-        const relations = res.edges
+      this.$store.commit('layer/SET_GENERATING', true)
+      if(!this.nodes.length) return this.$store.commit('layer/SET_GENERATING', false)
+
+      const curNodes = clone(this.nodes)
+
+      for(const node of curNodes) {
+        if(node.layer !== this.activatedLayer) continue
+        
+        const relations = await this.searchRelates(node)
 
        
         // TODO 根據設定過濾: 權重? 數量?
@@ -106,36 +106,98 @@ export default {
           const label = node.label === start ? end : start
           
           if(! list.includes(label)) {
-            this.addNode(label)
-            this.addLink(node, label)
+            this.$store.commit('network/ADD_NODES', this.newNode(label))
+            this.$store.commit('network/ADD_LINKS', this.newLink(node, label))
             count += 1
             list.push(label)
           }
         }
       }
+
+      this.$store.commit('layer/SET_TOTAL_LAYER', this.totalLayer + 1)
+      this.$store.commit('layer/SET_ACTIVATED_LAYER', this.totalLayer)
+      this.$store.commit('layer/SET_GENERATING', false)
     },
 
-    addNode(label) {
+    deleteLayer(layer) {
+      if(layer === 1) {
+        this.$store.commit('network/SET_NODES', [])
+        this.$store.commit('network/SET_LINKS', [])
+        return
+      }
+      const nodesRef = JSON.parse(JSON.stringify(this.nodes))
+      const linksRef = JSON.parse(JSON.stringify(this.links))
+
+      // 刪除當前層與大於層的節點
+      const layerNodes = filter(
+        nodesRef,
+        (node) => node.layer !== layer && node.layer < layer
+      )
+      this.$store.commit('network/SET_NODES', layerNodes)
+
+      // 刪除當前層與大於層的連線
+      const layerLinks = filter(linksRef, (link) => {
+        return (
+          link.source.layer !== layer &&
+          link.target.layer !== layer &&
+          link.target.layer < layer &&
+          link.source.layer < layer
+        )
+      })
+      this.$store.commit('network/SET_LINKS', layerLinks)
+
+      // 刪除當前層與大於的層
+
+      this.$store.commit('layer/SET_TOTAL_LAYER', layer - 1)
+      this.$store.commit('layer/SET_ACTIVATED_LAYER', layer - 1)
+
+      // FIXME 刪除後 index 不會更新導致連線有問題
+    },
+    
+    selectLayer(layer) {
+      this.$store.commit('layer/SET_ACTIVATED_LAYER', layer)
+    },
+
+    newNode(label) {
       const node = new NetNode({
-        id: `${this.activatedLayer}-${label}`,
+        id: `${this.activatedLayer + 1}-${label}`,
         label,
         closeness: 0,
-        layer: this.activatedLayer
+        layer: this.activatedLayer + 1
       })
-      this.$store.commit('network/ADD_NODES', node)
+      return node
     },
 
-    addLink(node, label) {
+    newLink(node, label) {
       const link = new NetLink({
-        source: `${this.activatedLayer}-${label}`,
+        source: `${this.activatedLayer + 1}-${label}`,
         target: node.id,
         label: ''
       })
-      this.$store.commit('network/ADD_LINKS', link)
+      return link
     },
 
-    selectLayer(layer) {
-      this.$store.commit('layer/SET_ACTIVATED_LAYER', layer)
+    async searchRelates(node) {
+      const [res] = await api({
+        method: 'get',
+        url: `/en/${node.label}`
+      })
+      return res.edges
+    },
+
+    isAPILayer() {
+      /* 生成的層數是否為需要打請求的層 */
+      if(this.activatedLayer + 1 > 3 || this.activatedLayer === 0) {
+        this.$store.commit('layer/SET_TOTAL_LAYER', this.totalLayer + 1)
+        this.$store.commit('layer/SET_ACTIVATED_LAYER', this.totalLayer)
+        return false
+      }
+      return true
+    },
+
+    importNodes() {
+      if(this.nodes.length) this.showImportWarningModal = true
+      if(! this.nodes.length) this.$refs['nodeImport'].click()
     },
 
     parseCSVData(data) {
@@ -167,40 +229,6 @@ export default {
       reader.readAsText(file)
     },
 
-    deleteLayer(layer) {
-      const nodesRef = JSON.parse(JSON.stringify(this.nodes))
-      const linksRef = JSON.parse(JSON.stringify(this.links))
-
-      // 刪除當前層與大於層的節點
-      const layerNodes = filter(
-        nodesRef,
-        (node) => node.layer !== layer && node.layer < layer
-      )
-      this.$store.commit('network/SET_NODES', layerNodes)
-
-      // 刪除當前層與大於層的連線
-      const layerLinks = filter(linksRef, (link) => {
-        return (
-          link.source.layer !== layer &&
-          link.target.layer !== layer &&
-          link.target.layer < layer &&
-          link.source.layer < layer
-        )
-      })
-      this.$store.commit('network/SET_LINKS', layerLinks)
-
-      // 刪除當前層與大於的層
-
-      this.$store.commit('layer/SET_TOTAL_LAYER', layer - 1)
-      this.$store.commit('layer/SET_ACTIVATED_LAYER', layer - 1)
-
-      // FIXME 刪除後 index 不會更新導致連線有問題
-    },
-
-    importNodes() {
-      if(this.nodes.length) this.showImportWarningModal = true
-      if(! this.nodes.length) this.$refs['nodeImport'].click()
-    },
   },
 }
 </script>
@@ -210,31 +238,13 @@ export default {
   @apply flex flex-col justify-between gap-2  bg-[#2B303B] text-gray-400;
   @apply p-5 h-full w-full min-w-[300px];
 }
-.layer-btn {
-  @apply w-full text-gray-700;
+
+.layers-wrapper {
+  @apply overflow-y-auto flex-1 flex flex-col gap-3 pt-[20px];
 }
 
-.layer-btn:is(.de-avtivated) {
-  @apply hover:bg-opacity-70;
-}
-.de-avtivated {
-  @apply !bg-gray-600;
+.layers-list {
+  @apply flex items-center justify-between gap-5;
 }
 
-.add-layer-btn {
-  @apply border-dashed border-1 bg-transparent hover:bg-emerald-300 hover:text-gray-700;
-}
-
-.func-btn {
-  @apply text-gray-700 hover:bg-opacity-50;
-}
-
-.delete-layer-btn {
-  @apply hover:text-rose-400 cursor-pointer;
-  transition: 0.3s;
-}
-
-.disabled {
-  @apply bg-gray-400 cursor-not-allowed hover:bg-opacity-100;
-}
 </style>

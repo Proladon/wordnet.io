@@ -4,8 +4,8 @@
       <pane :key="0" size="20">
         <LayerPane />
       </pane>
-      <pane :key="1" size="60">
-        <div class="relative ">
+      <pane :key="1" size="60" v-loading="generating">
+        <div class="relative">
           <network
             :nodeList="nodes"
             :linkList="links"
@@ -18,7 +18,9 @@
             @clickNode="clickNode"
             @deFocus="deFocus"
           />
-          <InputPane class="absolute bottom-0 left-0 right-0" />
+          
+          <WelcomePane />
+          <InputPane  />
         </div>
       </pane>
       <pane :key="2" size="20">
@@ -39,12 +41,14 @@ import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import { filter, difference } from 'lodash'
 import { mapState } from 'vuex'
+import WelcomePane from '@/components/WelcomePane.vue'
 
 export default {
   name: 'Home',
-  components: { LayerPane, Network, Splitpanes, Pane, InputPane, DataPane },
+  components: { LayerPane, Network, Splitpanes, Pane, InputPane, DataPane, WelcomePane },
   computed: {
     ...mapState('network', ['nodes', 'links']),
+    ...mapState('layer', ['generating']),
   },
 
   methods: {
@@ -75,6 +79,6 @@ export default {
 
 <style scoped lang="postcss">
 .home {
-  @apply flex w-full h-full ;
+  @apply flex w-full h-full;
 }
 </style>

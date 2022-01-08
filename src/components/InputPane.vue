@@ -1,19 +1,17 @@
 <template>
-<div class="input-pane" v-if="showPane">
-    <vs-card actionable  class="bg-gray-600">
+    <vs-card class="input-pane" :class="{'start-position': !nodes.length}" actionable v-if="showPane" >
       <div slot="header">
         <h3 class="text-gray-400">
-          New Node
+          Add Node
         </h3>
       </div>
-      <vs-input placeholder="關鍵字"  v-model="label" />
+      <vs-input class="w-full"  placeholder="Enter Node Name" @keyup.enter="handleAddNode"  v-model="label" />
       <div slot="footer">
         <vs-row vs-justify="flex-end">
-          <vs-button color="success" type="gradient" @click="handleAddNode">Add</vs-button>
+          <vs-button class="w-[100px]" color="success" type="gradient" @click="handleAddNode">Add</vs-button>
         </vs-row>
       </div>
     </vs-card>
-</div>
 </template>
 
 <script>
@@ -33,8 +31,8 @@ export default {
     showPane() {
       let show = false
       if (this.activatedLayer === 1) show = true
-      if (this.activatedLayer > 1 && this.selectedNode) show = true
-      if (this.selectedNode) {
+      else if (this.activatedLayer > 1 && this.selectedNode) show = true
+      else if (this.selectedNode) {
         if (this.activatedLayer === this.selectedNode.layer) show = false
         if (this.activatedLayer !== this.selectedNode.layer + 1) show = false
       }
@@ -43,7 +41,13 @@ export default {
   },
   methods: {
     handleAddNode() {
-      if (!this.label.trim()) return this.$message.warning('請輸入關鍵字')
+      if (!this.label.trim()) return this.$vs.notify({
+          icon: 'warning',
+         title:'Notice',
+         text:`Please enter node name`,
+         color:'warning',
+         position:'top-center',
+      })
 
       if (this.checkRepeatNode()) return this.$message.warning('節點已存在')
 
@@ -53,8 +57,8 @@ export default {
       
       this.$vs.notify({
         icon: 'check',
-         title:'Add Node',
-         text:`Success add new node - ${this.label.trim()}`,
+         title:'New Node',
+         text:this.label.trim(),
          color:'success',
          position:'top-center',
       })
@@ -98,7 +102,11 @@ export default {
 
 <style scoped lang="postcss">
 .input-pane {
-@apply p-[20px] grid place-content-end;
+@apply absolute left-0 right-0 bottom-20 m-auto w-[500px] bg-gray-600 px-[20px];
+}
+
+.start-position {
+  @apply bottom-[35%];
 }
 
 .input-container {
@@ -109,5 +117,9 @@ export default {
   @apply flex-shrink-0 ml-[10px] py-[7.5px] px-[10px] cursor-pointer rounded-md font-medium bg-emerald-300 text-center;
   @apply hover:bg-opacity-50;
   transition: 0.3s;
+}
+
+::v-deep .vs-inputx{
+  @apply !text-center;
 }
 </style>
