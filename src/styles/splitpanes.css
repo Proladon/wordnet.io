@@ -1,0 +1,8 @@
+.splitpanes.default-theme .splitpanes__splitter {
+    background-color: lightgrey;
+}
+
+.default-theme.splitpanes--vertical>.splitpanes__splitter, .default-theme .splitpanes--vertical>.splitpanes__splitter {
+    width: 2.5px;
+
+}

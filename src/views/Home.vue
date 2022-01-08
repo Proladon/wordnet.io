@@ -86,3 +86,7 @@ export default {
   @apply flex w-full h-full;
 }
 </style>
+
+<style>
+
+</style>
