@@ -83,7 +83,7 @@ import csvMixin from '@/mixin/csv.vue'
 import NetNode from '@/factory/node'
 import NetLink from '@/factory/link'
 import { mapState } from 'vuex'
-import { filter, clone } from 'lodash'
+import { filter, clone, map } from 'lodash'
 import LayerSettings from '@/components/LayerPane/LayerSettings.vue'
 import ImportWarningModalVue from '@/components/LayerPane/ImportWarningModal.vue'
 import { api } from '@/utils/axios'
@@ -151,24 +151,33 @@ export default {
       this.$store.commit('layer/SET_GENERATING', false)
     },
 
+    // => 刪除Layer
     deleteLayer (layer) {
+      this.$store.commit('layer/SET_GENERATING', true)
       if (layer === 1) {
         this.$store.commit('network/SET_NODES', [])
         this.$store.commit('network/SET_LINKS', [])
-        return
+        return this.$store.commit('layer/SET_GENERATING', false)
       }
-      const nodesRef = JSON.parse(JSON.stringify(this.nodes))
-      const linksRef = JSON.parse(JSON.stringify(this.links))
+      const curNodes = clone(this.nodes)
+      const curLinks = clone(this.links)
 
-      // 刪除當前層與大於層的節點
       const layerNodes = filter(
-        nodesRef,
+        curNodes,
         (node) => node.layer !== layer && node.layer < layer,
       )
-      this.$store.commit('network/SET_NODES', layerNodes)
+
+      const newNodes = map(layerNodes, node => {
+        return new NetNode({
+          id: node.id,
+          label: node.label,
+          closeness: 0,
+          layer: node.layer,
+        })
+      })
 
       // 刪除當前層與大於層的連線
-      const layerLinks = filter(linksRef, (link) => {
+      const layerLinks = filter(curLinks, (link) => {
         return (
           link.source.layer !== layer &&
           link.target.layer !== layer &&
@@ -176,14 +185,21 @@ export default {
           link.source.layer < layer
         )
       })
-      this.$store.commit('network/SET_LINKS', layerLinks)
 
-      // 刪除當前層與大於的層
+      const newLinks = map(layerLinks, link => {
+        return new NetLink({
+          source: link.source.id,
+          target: link.target.id,
+          label: '',
+        })
+      })
+
+      this.$store.commit('network/SET_NODES', newNodes)
+      this.$store.commit('network/SET_LINKS', newLinks)
 
       this.$store.commit('layer/SET_TOTAL_LAYER', layer - 1)
       this.$store.commit('layer/SET_ACTIVATED_LAYER', layer - 1)
-
-      // FIXME 刪除後 index 不會更新導致連線有問題
+      return this.$store.commit('layer/SET_GENERATING', false)
     },
 
     selectLayer (layer) {
