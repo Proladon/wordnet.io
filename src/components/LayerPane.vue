@@ -131,7 +131,6 @@ export default {
 
         let relations = await this.searchRelates(node)
 
-        // TODO 根據設定過濾: 權重? 數量?
         if (this.layerSettings.generate === 'random') relations = shuffle(relations)
         if (this.layerSettings.generate === 'relate') {
           relations.sort((a, b) => {
