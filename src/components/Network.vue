@@ -62,7 +62,7 @@
             ></circle>
 
             <!-- 節點按鈕 -->
-            <rect
+            <!-- <rect
               v-show="pinned.includes(node.index)"
               @click="$emit('deleteNode', node)"
               class="rect"
@@ -71,7 +71,14 @@
               width="10"
               height="10"
               style="fill: red; stroke: black; stroke-width: 1"
-            />
+            >asds</rect> -->
+            <foreignObject xmlns="http://www.w3.org/2000/svg"
+            v-show="pinned.includes(node.index)"
+              class="rect"
+              width="15"
+              height="15" >
+            <vs-button class="!w-[15px] !h-[15px] text-[12px] !p-0 !m-0">X</vs-button>
+            </foreignObject>
             <!-- 下方text v-show="node.showText" -->
             <text
               :dx="nodeSize + 5"
@@ -310,8 +317,8 @@ export default {
         // 更新節點座標
         d3.selectAll('.rect')
           .data(this.nodes)
-          .attr('x', (d) => d.x + 5)
-          .attr('y', (d) => d.y - 15)
+          .attr('x', (d) => d.x + 10)
+          .attr('y', (d) => d.y - 30)
         d3.selectAll('.node')
           .data(this.nodes)
           .attr('cx', (d) => {

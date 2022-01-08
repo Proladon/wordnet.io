@@ -44,17 +44,18 @@
 </template>
 
 <script>
+import csvMixin from '@/mixin/csv.vue'
 import NetNode from '@/factory/node'
 import NetLink from '@/factory/link'
 import { mapState } from 'vuex'
-import csv2json from 'csvjson-csv2json'
-import { forEach, filter, clone } from 'lodash'
+import {  filter, clone } from 'lodash'
 import LayerSettings from '@/components/LayerPane/LayerSettings.vue'
 import ImportWarningModalVue from '@/components/LayerPane/ImportWarningModal.vue'
 import {api} from '@/utils/axios'
 
 export default {
   name: 'LayerPane',
+  mixins: [csvMixin],
   components: { ImportWarningModalVue, LayerSettings },
   computed: {
     ...mapState('network', ['nodes', 'links']),
@@ -70,9 +71,6 @@ export default {
       return this.activatedLayer + 1
     },
   },
-  data: () => ({
-    showImportWarningModal: false,
-  }),
 
   methods: {
     async addLayer() {
@@ -195,39 +193,8 @@ export default {
       return true
     },
 
-    importNodes() {
-      if(this.nodes.length) this.showImportWarningModal = true
-      if(! this.nodes.length) this.$refs['nodeImport'].click()
-    },
 
-    parseCSVData(data) {
-      const list = []
-      forEach(data, (item) => {
-        const node = new NetNode({
-          id: `1-${item.Label}`,
-          label: item.Label,
-          closeness: Number(this.closeness) || 0,
-          layer: 1
-        })
-        list.push(node)
-      })
-      return list
-    },
 
-    importCSV(e) {
-      this.$store.commit('network/SET_NODES', [])
-      this.$store.commit('network/SET_LINKS', [])
-
-      let file = e.target.files[0]
-      let reader = new FileReader()
-      reader.onload = () => {
-        const csvArray = csv2json(reader.result, { parseNumbers: true })
-        const newNodes = this.parseCSVData(csvArray)
-        this.$store.commit('network/SET_NODES', newNodes)
-        this.$message.success('Import nodes success')
-      }
-      reader.readAsText(file)
-    },
 
   },
 }

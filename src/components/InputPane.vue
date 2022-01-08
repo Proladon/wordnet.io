@@ -5,6 +5,15 @@
           Add Node
         </h3>
       </div>
+      
+      <div v-if="!nodes.length">
+        <vs-button class="w-full" type="gradient" @click="importNodes">Import</vs-button>
+        <input class="hidden" @input="importCSV" ref="nodeImport" type="file" name="" id="import" />
+        <div class="my-[20px] text-gray-400">
+          OR
+        </div>
+      </div>
+
       <vs-input class="w-full"  placeholder="Enter Node Name" @keyup.enter="handleAddNode"  v-model="label" />
       <div slot="footer">
         <vs-row vs-justify="flex-end">
@@ -15,12 +24,14 @@
 </template>
 
 <script>
+import csvMixin from '@/mixin/csv'
 import NetNode from '@/factory/node'
 import NetLink from '@/factory/link'
 import { find } from 'lodash'
 import { mapState } from 'vuex'
 export default {
   name: 'InputPane',
+  mixins: [csvMixin],
   data: () => ({
     label: '',
     closeness: 0,
@@ -87,7 +98,7 @@ export default {
       this.$store.commit('network/ADD_LINKS', link)
        
     },
-
+    
     checkRepeatNode() {
       return Boolean(
         find(this.nodes, {
@@ -102,15 +113,16 @@ export default {
 
 <style scoped lang="postcss">
 .input-pane {
-@apply absolute left-0 right-0 bottom-20 m-auto w-[500px] bg-gray-600 px-[20px];
+@apply absolute left-0 right-0 bottom-20 m-auto  bg-gray-600 px-[20px];
+@apply w-full max-w-[500px] min-w-[150px] ;
 }
 
 .start-position {
-  @apply bottom-[35%];
+  @apply bottom-[45%];
 }
 
 .input-container {
-  @apply grid gap-[10px] grid-cols-2 w-full w-[500px];
+  @apply grid gap-[10px] grid-cols-2;
 }
 
 .add-node-btn {

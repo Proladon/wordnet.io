@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&display=swap');
 
 * {
-  @apply outline-none;
+  @apply !outline-none;
 }
+
 
 .el-loading-mask {
   background-color: rgba(10, 10, 10, 0.5)

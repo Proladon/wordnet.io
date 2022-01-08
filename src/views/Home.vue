@@ -19,7 +19,6 @@
             @deFocus="deFocus"
           />
           
-          <WelcomePane />
           <InputPane  />
         </div>
       </pane>
@@ -41,11 +40,10 @@ import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import { filter, difference } from 'lodash'
 import { mapState } from 'vuex'
-import WelcomePane from '@/components/WelcomePane.vue'
 
 export default {
   name: 'Home',
-  components: { LayerPane, Network, Splitpanes, Pane, InputPane, DataPane, WelcomePane },
+  components: { LayerPane, Network, Splitpanes, Pane, InputPane, DataPane },
   computed: {
     ...mapState('network', ['nodes', 'links']),
     ...mapState('layer', ['generating']),
