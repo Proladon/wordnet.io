@@ -34,7 +34,7 @@
       </div>
     </template>
 
-    <template v-if="!showPane && selectedNode && activatedLayer > 1 && selectedNode.layer === activatedLayer">
+    <template v-if="showHintPane">
       <div v-if="activatedLayer > 1" slot="header">
         <h3 class="text-gray-400">
           Add Node To Layer {{ activatedLayer + 1 }}
@@ -49,7 +49,7 @@
 import csvMixin from '@/mixin/csv'
 import NetNode from '@/factory/node'
 import NetLink from '@/factory/link'
-import { find, clone } from 'lodash'
+import { find } from 'lodash'
 import { mapState } from 'vuex'
 export default {
   name: 'InputPane',
@@ -60,7 +60,7 @@ export default {
   }),
   computed: {
     ...mapState('network', ['nodes', 'selectedNode']),
-    ...mapState('layer', ['activatedLayer']),
+    ...mapState('layer', ['activatedLayer', 'totalLayer']),
     showPane () {
       let show = false
       if (this.activatedLayer > 1 && this.selectedNode) show = true
@@ -69,6 +69,9 @@ export default {
         if (this.activatedLayer !== this.selectedNode.layer + 1) show = false
       }
       return show
+    },
+    showHintPane () {
+      return !this.showPane && this.selectedNode && this.activatedLayer > 1 && this.selectedNode.layer === this.activatedLayer && this.totalLayer <= this.selectedNode.layer
     },
   },
   methods: {

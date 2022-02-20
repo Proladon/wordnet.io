@@ -5,8 +5,9 @@
         <LayerPane />
       </pane>
       <pane :key="1" v-loading="generating" size="60">
-        <div class="relative">
+        <div class="relative bg-[#363F52] w-full h-full">
           <network
+            v-if="refresh"
             :nodeList="nodes"
             :linkList="links"
             showLinkText
@@ -46,9 +47,21 @@ import { mapState } from 'vuex'
 export default {
   name: 'Home',
   components: { LayerPane, Network, Splitpanes, Pane, InputPane, DataPane },
+  data: () => ({
+    refresh: true,
+  }),
   computed: {
     ...mapState('network', ['nodes', 'links']),
     ...mapState('layer', ['generating']),
+  },
+
+  mounted () {
+    window.onresize = () => {
+      this.refresh = false
+      setTimeout(() => {
+        this.refresh = true
+      }, 100)
+    }
   },
 
   methods: {
