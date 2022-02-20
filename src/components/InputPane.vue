@@ -178,8 +178,4 @@ export default {
 .input-disabled {
   @apply pointer-events-none cursor-not-allowed;
 }
-
-.hint {
-  @apply !text-[rgb(222, 109, 131)];
-}
 </style>
