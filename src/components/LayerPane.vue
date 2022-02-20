@@ -101,6 +101,7 @@ import LayerSettings from '@/components/LayerPane/LayerSettings.vue'
 import ImportWarningModalVue from '@/components/LayerPane/ImportWarningModal.vue'
 import ResetWarningModalVue from '@/components/LayerPane/ResetWarningModal.vue'
 import DeleteLayerWarningModal from '@/components/LayerPane/DeleteLayerWarningModal.vue'
+import { formatLabel } from '@/utils/helper'
 import { api } from '@/utils/axios'
 
 export default {
@@ -155,9 +156,9 @@ export default {
         const list = []
         for (const relate of relations) {
           if (count > times) break
-          const start = relate.start.label
-          const end = relate.end.label
-          const label = node.label === start ? end : start
+          const start = formatLabel(relate.start.label)
+          const end = formatLabel(relate.end.label)
+          const label = formatLabel(node.label) === start ? end : start
 
           if (!list.includes(label)) {
             this.$store.commit('network/ADD_NODES', this.newNode(label))
@@ -200,7 +201,7 @@ export default {
       const newNodes = map(layerNodes, node => {
         return new NetNode({
           id: node.id,
-          label: node.label,
+          label: formatLabel(node.label),
           closeness: 0,
           layer: node.layer,
         })
@@ -265,7 +266,7 @@ export default {
 
     isAPILayer () {
       /* 生成的層數是否為需要打請求的層 */
-      if (this.activatedLayer + 1 > 3 || this.activatedLayer === 0) {
+      if (this.activatedLayer % 2 === 0 || this.activatedLayer === 0) {
         this.$store.commit('layer/SET_TOTAL_LAYER', this.totalLayer + 1)
         this.$store.commit('layer/SET_ACTIVATED_LAYER', this.totalLayer)
         return false

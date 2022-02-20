@@ -8,3 +8,8 @@ export const updateSetting = function (key) {
     },
   }
 }
+
+export const formatLabel = (label) => {
+  if (!label) return ''
+  return label.trim().toLowerCase().replaceAll(' ', '_')
+}

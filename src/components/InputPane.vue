@@ -49,7 +49,7 @@
 import csvMixin from '@/mixin/csv'
 import NetNode from '@/factory/node'
 import NetLink from '@/factory/link'
-import { find } from 'lodash'
+import { find, clone } from 'lodash'
 import { mapState } from 'vuex'
 export default {
   name: 'InputPane',
@@ -109,9 +109,10 @@ export default {
     },
 
     addNode () {
+      const label = this.label.trim()
       const node = new NetNode({
-        id: `${this.activatedLayer}-${this.label.trim()}`,
-        label: this.label.trim(),
+        id: `${this.activatedLayer}-${label.toLowerCase().replaceAll(' ', '_')}`,
+        label: label.toLowerCase().replaceAll(' ', '_'),
         closeness: Number(this.closeness),
         layer: this.activatedLayer,
       })
@@ -119,9 +120,10 @@ export default {
     },
 
     addLink () {
+      const label = this.label.trim()
       if (!this.selectedNode || this.activatedLayer === 1) return
       const link = new NetLink({
-        source: `${this.activatedLayer}-${this.label.trim()}`,
+        source: `${this.activatedLayer}-${label.toLowerCase().replaceAll(' ', '_')}`,
         target: this.selectedNode.id,
         label: '',
       })
