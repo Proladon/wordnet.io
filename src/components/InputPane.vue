@@ -1,32 +1,47 @@
 <template>
-  <vs-card v-if="showPane || activatedLayer === 1" class="input-pane" :class="{'start-position': !nodes.length}" actionable>
-    <div slot="header">
-      <h3 class="text-gray-400">
-        Add Node
-      </h3>
-    </div>
-
-    <div v-if="!nodes.length">
-      <vs-button class="w-full" type="gradient" @click="importNodes">Import</vs-button>
-      <input
-        id="import"
-        ref="nodeImport"
-        class="hidden"
-        type="file"
-        name=""
-        @input="importCSV"
-      >
-      <div class="my-[20px] text-gray-400">
-        OR
+  <vs-card class="input-pane" :class="{'start-position': !nodes.length}" actionable>
+    <template v-if="showPane || activatedLayer === 1">
+      <div v-if="activatedLayer === 1" slot="header">
+        <h3 class="text-gray-400">
+          Create Node
+        </h3>
       </div>
-    </div>
+      <div v-if="activatedLayer > 1" slot="header">
+        <h3 class="text-gray-400">
+          Add Node To Layer {{ activatedLayer }}
+        </h3>
+      </div>
+      <div v-if="!nodes.length">
+        <vs-button class="w-full" type="gradient" @click="importNodes">Import</vs-button>
+        <input
+          id="import"
+          ref="nodeImport"
+          class="hidden"
+          type="file"
+          name=""
+          @input="importCSV"
+        >
+        <div class="my-[20px] text-gray-400">
+          OR
+        </div>
+      </div>
 
-    <vs-input v-model="label" class="w-full" placeholder="Enter Node Name" @keyup.enter="handleAddNode" />
-    <div slot="footer">
-      <vs-row vs-justify="flex-end">
-        <vs-button class="w-[100px]" color="success" type="gradient" @click="handleAddNode">Add</vs-button>
-      </vs-row>
-    </div>
+      <vs-input v-model="label" class="w-full" placeholder="Enter Node Name" @keyup.enter="handleAddNode" />
+      <div slot="footer">
+        <vs-row vs-justify="flex-end">
+          <vs-button class="w-[100px]" color="success" type="gradient" @click="handleAddNode">Add</vs-button>
+        </vs-row>
+      </div>
+    </template>
+
+    <template v-if="!showPane && selectedNode && activatedLayer > 1 && selectedNode.layer === activatedLayer">
+      <div v-if="activatedLayer > 1" slot="header">
+        <h3 class="text-gray-400">
+          Add Node To Layer {{ activatedLayer + 1 }}
+        </h3>
+      </div>
+      <span style="color: rgb(222, 109, 131)">You need to generate layer {{ activatedLayer + 1 }} first</span>
+    </template>
   </vs-card>
 </template>
 
@@ -158,5 +173,13 @@ export default {
   span {
     top: unset !important;
   }
+}
+
+.input-disabled {
+  @apply pointer-events-none cursor-not-allowed;
+}
+
+.hint {
+  @apply !text-[rgb(222, 109, 131)];
 }
 </style>

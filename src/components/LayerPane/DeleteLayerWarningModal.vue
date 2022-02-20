@@ -9,7 +9,7 @@
   >
     <div class="con-exemple-prompt">
       <vs-alert color="danger" icon="new_releases">
-        Will reset all currently state, still continue ?
+        Confirm delete Layer {{ layer }} ?
       </vs-alert>
     </div>
   </vs-prompt>
@@ -17,13 +17,14 @@
 
 <script>
 export default {
-  name: 'ResetWarningModal',
+  name: 'DeleteLayerWarningModal',
+  props: ['layer'],
   data: () => ({
     show: true,
   }),
   methods: {
     confirm () {
-      this.$emit('confirm')
+      this.$emit('confirm', this.layer)
       this.$emit('close')
     },
     close () {

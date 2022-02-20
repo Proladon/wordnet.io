@@ -19,7 +19,7 @@
               color="danger"
               type="filled"
               icon="delete"
-              @click="deleteLayer(layer)"
+              @click="openDeleteLayerModal(layer)"
             />
             <vs-button
               v-if="layer === 1 && nodes.length"
@@ -81,6 +81,13 @@
       @close="showResetWarningModal = false"
       @confirm="resetLayer"
     />
+
+    <DeleteLayerWarningModal
+      v-if="showDeleteLayerWarningModal"
+      :layer="selectDelete"
+      @close="showDeleteLayerWarningModal = false"
+      @confirm="deleteLayer"
+    />
   </div>
 </template>
 
@@ -93,14 +100,17 @@ import { filter, clone, map, shuffle } from 'lodash'
 import LayerSettings from '@/components/LayerPane/LayerSettings.vue'
 import ImportWarningModalVue from '@/components/LayerPane/ImportWarningModal.vue'
 import ResetWarningModalVue from '@/components/LayerPane/ResetWarningModal.vue'
+import DeleteLayerWarningModal from '@/components/LayerPane/DeleteLayerWarningModal.vue'
 import { api } from '@/utils/axios'
 
 export default {
   name: 'LayerPane',
-  components: { ImportWarningModalVue, ResetWarningModalVue, LayerSettings },
+  components: { ImportWarningModalVue, ResetWarningModalVue, DeleteLayerWarningModal, LayerSettings },
   mixins: [csvMixin],
   data: () => ({
     showResetWarningModal: false,
+    showDeleteLayerWarningModal: false,
+    selectDelete: null,
   }),
   computed: {
     ...mapState('network', ['nodes', 'links']),
@@ -172,7 +182,12 @@ export default {
     },
 
     // => 刪除Layer
+    openDeleteLayerModal (layer) {
+      this.showDeleteLayerWarningModal = true
+      this.selectDelete = layer
+    },
     deleteLayer (layer) {
+      if (!layer) return
       this.$store.commit('layer/SET_GENERATING', true)
       const curNodes = clone(this.nodes)
       const curLinks = clone(this.links)
@@ -245,7 +260,7 @@ export default {
         method: 'get',
         url: `/en/${node.label}`,
       })
-      return res.edges
+      return filter(res.edges, i => i.start.language === 'en' && i.end.language === 'en')
     },
 
     isAPILayer () {
